@@ -5,7 +5,7 @@
 |---|---|---|---|
 | 0 | Planning: CLAUDE.md, VISION.md, specs | Opus | ✅ done |
 | 1 | Shell + live link: all 5 screens on Vercel | Sonnet | ✅ done — live at https://laavanyanegi.vercel.app/ |
-| 2 | Look test: one room corner in pixel style, day/night prototype at `/lab` (approval gate) | Opus | ⏳ next |
+| 2 | Look test: one room corner in pixel style, day/night prototype at `/lab` (approval gate) | Opus | 🟡 built, waiting for Laavanya's approval + slider values |
 | 3 | Content v1: first case study, About, Contact, ID card → **start applying** | Sonnet | — |
 | 4 | The room: full 3D room, both views, flip arrows, floating labels, spinning character, day/night lighting | Opus | — |
 | 5 | Entrance + motion: knock screen, first-person welcome, camera choreography, section zoom | Opus | — |
@@ -19,6 +19,7 @@ Specs for phases 2–7 are written at the start of each phase, after discussing 
 - 2026-11-22: Stack locked (see CLAUDE.md). Git identity uses the GitHub noreply email. The repo is public.
 - 2026-11-22: The handle is top-left on home and top-right on inner pages. Section↔room-spot mapping approved. Deep links skip the entry. No sound, mobile haptics only. DOB, gender and phone removed from the ID card.
 - 2026-11-22: The room is built as low-poly 3D with a pixel/dither post-process (style: kitchen reference). Approval is required via the Phase 2 look test.
+- 2026-11-22: Look test corner = desk + balcony (south-west). Tuned with live sliders on `/lab` (separate day/night values). `/lab` is live but unlinked and noindex. No character in the look test.
 
 ## Waiting on Laavanya
 - v1 content (fill `docs/content-templates/`), headshot, CV PDF
@@ -38,3 +39,12 @@ _(each phase appends: date, what was done, anything left over)_
 - Home UI, folder-tab top bar, ID card overlay (lanyard, Esc/outside-click/✕, focus trap, placeholder PDF), day/night switch (default from local time, remembered) all work. Mobile layout checked at 375px.
 - Known: inactive tabs are 30% opacity per spec, which is below AA contrast; revisit in Phase 7.
 - Pushed to GitHub and deployed on Vercel: https://laavanyanegi.vercel.app/ (all 5 screens + case-study page verified live).
+
+### 2026-11-22: Phase 2 (look test), part 1
+- Spec: `docs/phases/02-look-test.md`.
+- `/lab`: low-poly south-west corner (desk, purple lamp, laptop, mesh chair, rug, side table + radio + amber lamp, pet bed, mandala, balcony glass door with curtains, railing, skyline, bookshelf, plant). Orthographic dollhouse view with limited drag-to-look.
+- Lighting: day = low warm sun through the door only (an invisible ceiling/north wall block light from the open dollhouse top), blue-ish fill. Night = moonlight, purple lamp (with shadows), amber lamp, laptop glow, lit skyline.
+- Pixel look is a custom post pass (no new packages) in `components/canvas/lab/PixelPass.tsx`: low-res render → nearest upscale, ACES tone map, grade (warmth, amber/blue split-tone), Bayer dither, grain, vignette. Grain is static with reduced motion.
+- Tuning panel (`components/ui/LabPanel.tsx`, store `store/lab.ts`): per-mode sliders, Copy settings, Reset. Collapsed by default on phones. Site nav hidden on `/lab`.
+- 3D colours live in `lib/roomPalette.ts` (room paint/lights, separate from UI tokens).
+- **Next:** Laavanya tunes `/lab`, sends copied settings → lock them into `LOOK_DEFAULTS`, note approval here, then Phase 3.

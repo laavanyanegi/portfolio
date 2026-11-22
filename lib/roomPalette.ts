@@ -1,0 +1,48 @@
+/**
+ * Colours for 3D room materials and lights. UI colours live in app/globals.css;
+ * these are the room's own paint, wood and light colours (VISION §2), kept in one place.
+ */
+export const ROOM = {
+  wall: "#efe2c9",
+  wallCap: "#3b2418",
+  floorSide: "#4a2e1d",
+  woodLight: "#b07a4a",
+  woodMid: "#8a5a34",
+  woodDark: "#4a2c1a",
+  frame: "#f4ecdd",
+  curtain: "#e6dcef",
+  rod: "#3b2418",
+  mandala: "#a58bd6",
+  lampShade: "#b9a0ea",
+  lampBase: "#9d84d6",
+  laptop: "#c9c9cf",
+  screenDay: "#cfe0ff",
+  screenNight: "#9fc3ff",
+  chair: "#1d1b1f",
+  chairMesh: "#2c2a30",
+  bottle: "#4f86b8",
+  bookA: "#3d6b4f",
+  bookB: "#a14a3a",
+  bookC: "#d8c08a",
+  plant: "#4f7a3a",
+  pot: "#b96b45",
+  radio: "#1f1a17",
+  radioTrim: "#c9a35a",
+  amberShade: "#f2b25c",
+  petBed: "#8a5a3a",
+  petCushion: "#e9d6b8",
+  railing: "#3a3633",
+  balcony: "#8f8a84",
+  // light colours
+  sun: "#ffc98a",
+  skyFillDay: "#b9cbe8",
+  groundFillDay: "#8a6a4a",
+  moon: "#7f95d6",
+  skyFillNight: "#2a2f5a",
+  lampGlow: "#b48cff",
+  amberGlow: "#ffae5c",
+  screenGlow: "#9fc3ff",
+  // what's around the cut-away room
+  voidDay: "#e8dcc6",
+  voidNight: "#141019",
+} as const;
