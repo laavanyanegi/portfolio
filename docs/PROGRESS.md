@@ -5,8 +5,8 @@
 |---|---|---|---|
 | 0 | Planning: CLAUDE.md, VISION.md, specs | Opus | ✅ done |
 | 1 | Shell + live link: all 5 screens on Vercel | Sonnet | ✅ done — live at https://laavanyanegi.vercel.app/ |
-| 2 | Look test: one room corner in pixel style, day/night prototype at `/lab` (approval gate) | Opus | 🟡 built, waiting for Laavanya's approval + slider values |
-| 3 | Content v1: first case study, About, Contact, ID card → **start applying** | Sonnet | — |
+| 2 | Look test: one room corner in pixel style, day/night prototype at `/lab` (approval gate) | Opus | ✅ approved 2026-11-23 (values locked in `store/lab.ts`) |
+| 3 | Content v1: first case study, About, Contact, ID card → **start applying** | Sonnet | ⏳ next |
 | 4 | The room: full 3D room, both views, flip arrows, floating labels, spinning character, day/night lighting | Opus | — |
 | 5 | Entrance + motion: knock screen, first-person welcome, camera choreography, section zoom | Opus | — |
 | 6 | Mobile world: bed point of view, 360° orb, ID icon, haptics, lighter scene | Opus | — |
@@ -48,3 +48,5 @@ _(each phase appends: date, what was done, anything left over)_
 - Tuning panel (`components/ui/LabPanel.tsx`, store `store/lab.ts`): per-mode sliders, Copy settings, Reset. Collapsed by default on phones. Site nav hidden on `/lab`.
 - 3D colours live in `lib/roomPalette.ts` (room paint/lights, separate from UI tokens).
 - **Next:** Laavanya tunes `/lab`, sends copied settings → lock them into `LOOK_DEFAULTS`, note approval here, then Phase 3.
+
+
