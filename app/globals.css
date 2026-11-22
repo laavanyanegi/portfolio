@@ -1,0 +1,95 @@
+@import "tailwindcss";
+
+/* ───────── Design tokens (placeholder palette; swapped in Phase 7) ───────── */
+:root {
+  /* day */
+  --bg: #efe6d6;
+  --panel: #f7f0e4;
+  --panel-alt: #ece2d0;
+  --ink: #2b1d14;
+  --ink-muted: #5c473a;
+  --brown: #3b2418;
+  --on-brown: #f7f0e4;
+  --accent: #6d55b5;
+  --accent-soft: #d9cff2;
+  --line: #cdbfa8;
+  --room-top: #f3e4c4;
+  --room-mid: #d9c3a0;
+  --room-low: #8a6a4a;
+  --shade: rgba(59, 36, 24, 0);
+}
+
+:root[data-theme="night"] {
+  --bg: #1b1220;
+  --panel: #2a1a12;
+  --panel-alt: #38241a;
+  --ink: #f3e9da;
+  --ink-muted: #cdbfae;
+  --brown: #120a07;
+  --on-brown: #f3e9da;
+  --accent: #b9a4f0;
+  --accent-soft: #4a3a78;
+  --line: #5a4234;
+  --room-top: #2a2150;
+  --room-mid: #3a2a3e;
+  --room-low: #1d120d;
+  --shade: rgba(10, 6, 20, 0.35);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-panel: var(--panel);
+  --color-panel-alt: var(--panel-alt);
+  --color-ink: var(--ink);
+  --color-muted: var(--ink-muted);
+  --color-brown: var(--brown);
+  --color-on-brown: var(--on-brown);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-line: var(--line);
+  --font-display: var(--font-pixel);
+  --font-sans: var(--font-body);
+}
+
+html {
+  background: var(--bg);
+  color-scheme: light;
+}
+html[data-theme="night"] {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body), system-ui, sans-serif;
+  min-height: 100dvh;
+}
+
+.font-pixel {
+  font-family: var(--font-pixel), monospace;
+}
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.sr-only-text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
