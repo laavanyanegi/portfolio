@@ -4,8 +4,8 @@
 | # | Phase | Suggested model | Status |
 |---|---|---|---|
 | 0 | Planning: CLAUDE.md, VISION.md, specs | Opus | ✅ done |
-| 1 | Shell + live link: all 5 screens on Vercel | Sonnet | ✅ built; live URL pending Vercel import |
-| 2 | Look test: one room corner in pixel style, day/night prototype at `/lab` (approval gate) | Opus | — |
+| 1 | Shell + live link: all 5 screens on Vercel | Sonnet | ✅ done — live at https://laavanyanegi.vercel.app/ |
+| 2 | Look test: one room corner in pixel style, day/night prototype at `/lab` (approval gate) | Opus | ⏳ next |
 | 3 | Content v1: first case study, About, Contact, ID card → **start applying** | Sonnet | — |
 | 4 | The room: full 3D room, both views, flip arrows, floating labels, spinning character, day/night lighting | Opus | — |
 | 5 | Entrance + motion: knock screen, first-person welcome, camera choreography, section zoom | Opus | — |
@@ -37,4 +37,4 @@ _(each phase appends: date, what was done, anything left over)_
 - Room is a CSS gradient placeholder in `components/canvas/RoomSlot.tsx` (Phase 4 swaps in the R3F canvas).
 - Home UI, folder-tab top bar, ID card overlay (lanyard, Esc/outside-click/✕, focus trap, placeholder PDF), day/night switch (default from local time, remembered) all work. Mobile layout checked at 375px.
 - Known: inactive tabs are 30% opacity per spec, which is below AA contrast; revisit in Phase 7.
-- Left: push to GitHub and Vercel import (see below).
+- Pushed to GitHub and deployed on Vercel: https://laavanyanegi.vercel.app/ (all 5 screens + case-study page verified live).
