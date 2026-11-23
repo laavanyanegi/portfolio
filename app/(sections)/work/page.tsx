@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { visibleProjects } from "@/content/projects";
 import { blogs } from "@/content/blogs";
 import { CardRow, ComingSoon, PageTitle, SectionHeading, Thumb } from "@/components/sections/parts";
@@ -19,7 +20,18 @@ export default function WorkPage() {
           {visibleProjects.map((p) => {
             const body = (
               <>
-                <Thumb label={p.status === "published" ? "Case study" : "Coming soon"} />
+                {p.thumbnail ? (
+                  <Image
+                    src={p.thumbnail}
+                    alt=""
+                    width={1280}
+                    height={640}
+                    sizes="(min-width: 1024px) 300px, 50vw"
+                    className="aspect-video w-full rounded-sm object-cover"
+                  />
+                ) : (
+                  <Thumb label={p.status === "published" ? "Case study" : "Coming soon"} />
+                )}
                 <h3 className="mt-3 text-lg font-semibold">{p.title}</h3>
                 {p.status === "in-progress" && <p className="text-sm text-muted">Case study coming soon</p>}
                 <dl className="mt-2 space-y-1 text-sm">

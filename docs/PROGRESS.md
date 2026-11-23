@@ -6,7 +6,7 @@
 | 0 | Planning: CLAUDE.md, VISION.md, specs | Opus | ✅ done |
 | 1 | Shell + live link: all 5 screens on Vercel | Sonnet | ✅ done — live at https://laavanyanegi.vercel.app/ |
 | 2 | Look test: one room corner in pixel style, day/night prototype at `/lab` (approval gate) | Opus | ✅ approved 2026-11-23 (values locked in `store/lab.ts`) |
-| 3 | Content v1: first case study, About, Contact, ID card → **start applying** | Sonnet | ⏳ next |
+| 3 | Content v1: first case study, About, Contact, ID card → **start applying** | Sonnet | ✅ done 2026-11-23 (placeholders remain, see below) |
 | 4 | The room: full 3D room, both views, flip arrows, floating labels, spinning character, day/night lighting | Opus | — |
 | 5 | Entrance + motion: knock screen, first-person welcome, camera choreography, section zoom | Opus | — |
 | 6 | Mobile world: bed point of view, 360° orb, ID icon, haptics, lighter scene | Opus | — |
@@ -21,10 +21,14 @@ Specs for phases 2–7 are written at the start of each phase, after discussing 
 - 2026-11-22: The room is built as low-poly 3D with a pixel/dither post-process (style: kitchen reference). Approval is required via the Phase 2 look test.
 - 2026-11-22: Look test corner = desk + balcony (south-west). Tuned with live sliders on `/lab` (separate day/night values). `/lab` is live but unlinked and noindex. No character in the look test.
 
+- 2026-11-23: Airtel case study is a solo, self-initiated project, June–Nov 2026. The resume PDF is NOT published because it contains a phone number; a redacted CV is needed. Review screenshots are not published (they show real users' names/handles); findings are paraphrased.
+
 ## Waiting on Laavanya
-- v1 content (fill `docs/content-templates/`), headshot, CV PDF
-- Carrd URL, social URLs
+- Headshot, redacted CV PDF (no phone number), Carrd URL
 - ID card PDF (designed later)
+- Airtel: per-user test times and after-redesign average, Miro journey/empathy map, approve drafted "What I learned" limits, confirm blog summaries (written from titles only)
+- About: years for the two awards, two certificates, and school dates
+- Creatives: all items (still placeholders)
 - Brand system from Claude Design (needed by Phase 7)
 
 ## Session log
@@ -50,3 +54,9 @@ _(each phase appends: date, what was done, anything left over)_
 - **Next:** Laavanya tunes `/lab`, sends copied settings → lock them into `LOOK_DEFAULTS`, note approval here, then Phase 3.
 
 
+
+### 2026-11-23: Phase 3 (content v1)
+- Airtel case study live at `/work/airtel-payments-bank-ncmc-recharge-case-study`: video, before/after galleries, MoSCoW and metrics tables, placeholders for missing test data. Sources: Google Doc (teardown, 1-pager, PRD), Notion 1-pager, GitHub repo.
+- Project data model extended with `blocks` (text, list, table, gallery, video, links, quote, placeholder) in `lib/types.ts`; rendered by `components/sections/ProjectBlocks.tsx`. Images are WebP in `public/work/airtel/`.
+- About filled from the resume, Contact links filled, two Medium posts added to Work. Sample project removed.
+- Known: dev console shows a pre-existing Next warning about `params` outside Suspense on `/work/[slug]` (build passes).

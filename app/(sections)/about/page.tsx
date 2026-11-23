@@ -14,9 +14,16 @@ function Timeline({ items, label }: { items: TimelineEntry[]; label: string }) {
           <span className="absolute -left-[1.95rem] top-1.5 h-3 w-3 bg-accent" aria-hidden="true" />
           <h3 className="font-semibold">{e.title}</h3>
           <p className="text-sm text-muted">
-            {e.org} · {e.period}
+            {[e.org, e.location, e.period].filter(Boolean).join(" · ")}
           </p>
           {e.summary && <p className="mt-1">{e.summary}</p>}
+          {e.highlights && (
+            <ul className="mt-2 list-disc space-y-1 pl-5">
+              {e.highlights.map((h) => (
+                <li key={h}>{h}</li>
+              ))}
+            </ul>
+          )}
         </li>
       ))}
     </ol>
@@ -27,6 +34,11 @@ export default function AboutPage() {
   return (
     <>
       <PageTitle>About</PageTitle>
+      <p className="max-w-prose leading-relaxed">
+        Product-oriented professional with about two years in digital media, CMS usability improvements, user testing,
+        analytics and cross-functional work. Interested in building customer-centric fintech products.
+      </p>
+      <p className="mt-4 text-sm text-muted">CV download coming soon.</p>
       <SectionHeading>Work experience</SectionHeading>
       <Timeline items={about.experience} label="Work experience" />
       <SectionHeading>Education</SectionHeading>

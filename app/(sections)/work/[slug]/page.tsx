@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { publishedProjects } from "@/content/projects";
+import Image from "next/image";
 import { PageTitle, SectionHeading } from "@/components/sections/parts";
+import ProjectBlocks from "@/components/sections/ProjectBlocks";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -38,6 +40,18 @@ export default async function ProjectPage({ params }: Props) {
         <PageTitle>{p.title}</PageTitle>
       </div>
 
+      {p.cover && (
+        <Image
+          src={p.cover}
+          alt={`${p.title} banner`}
+          width={1280}
+          height={640}
+          priority
+          sizes="(min-width: 1024px) 900px, 100vw"
+          className="mb-6 h-auto w-full rounded-md border-2 border-line"
+        />
+      )}
+
       <dl className="grid gap-x-8 gap-y-2 sm:grid-cols-2">
         {facts.map(([k, v]) => (
           <div key={k}>
@@ -59,11 +73,12 @@ export default async function ProjectPage({ params }: Props) {
       )}
 
       {p.sections
-        .filter((s) => s.body)
+        .filter((s) => s.body || s.blocks?.length)
         .map((s) => (
           <section key={s.heading}>
             <SectionHeading>{s.heading}</SectionHeading>
-            <p className="max-w-prose whitespace-pre-line leading-relaxed">{s.body}</p>
+            {s.body && <p className="max-w-prose whitespace-pre-line leading-relaxed">{s.body}</p>}
+            {s.blocks && <ProjectBlocks blocks={s.blocks} />}
           </section>
         ))}
     </article>

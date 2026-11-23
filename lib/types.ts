@@ -16,9 +16,28 @@ export type Project = {
   metrics: { label: string; value: string }[];
   thumbnail?: string;
   cover?: string;
-  /** Case-study sections, in reading order. Empty body = skipped. */
-  sections: { heading: string; body: string }[];
+  /** Case-study sections, in reading order. A section with no body and no blocks is skipped. */
+  sections: ProjectSection[];
 };
+
+export type ProjectSection = {
+  heading: string;
+  body?: string;
+  blocks?: ProjectBlock[];
+};
+
+export type GalleryImage = { src: string; alt: string; caption: string; width: number; height: number };
+
+export type ProjectBlock =
+  | { type: "text"; text: string }
+  | { type: "list"; items: string[] }
+  | { type: "table"; head: string[]; rows: string[][]; caption?: string }
+  | { type: "gallery"; label: string; items: GalleryImage[] }
+  | { type: "video"; src: string; caption: string }
+  | { type: "links"; items: { label: string; url: string }[] }
+  | { type: "quote"; text: string; source: string }
+  /** Dashed "coming soon" box for content not supplied yet. */
+  | { type: "placeholder"; text: string };
 
 export type Blog = {
   title: string;
@@ -43,6 +62,8 @@ export type TimelineEntry = {
   org: string;
   period: string;
   summary?: string;
+  location?: string;
+  highlights?: string[];
 };
 
 export type About = {
