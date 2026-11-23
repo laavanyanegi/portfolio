@@ -60,3 +60,4 @@ _(each phase appends: date, what was done, anything left over)_
 - Project data model extended with `blocks` (text, list, table, gallery, video, links, quote, placeholder) in `lib/types.ts`; rendered by `components/sections/ProjectBlocks.tsx`. Images are WebP in `public/work/airtel/`.
 - About filled from the resume, Contact links filled, two Medium posts added to Work. Sample project removed.
 - Known: dev console shows a pre-existing Next warning about `params` outside Suspense on `/work/[slug]` (build passes).
+- 2026-11-23 (later): Creatives emptied and tagged "Work in progress"; ID card headshot tagged the same; About gained a Skills section (from the resume).

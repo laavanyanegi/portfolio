@@ -80,7 +80,12 @@ export default function IdCardOverlay() {
                   role="img"
                   aria-label="Headshot placeholder"
                 >
-                  LN
+                  <span className="flex flex-col items-center gap-2">
+                    LN
+                    <span className="font-pixel rounded-sm bg-brown px-1.5 py-0.5 text-[10px] uppercase leading-tight text-on-brown">
+                      Work in progress
+                    </span>
+                  </span>
                 </div>
                 <div className="min-w-0">
                   <h2 className="font-pixel text-lg leading-tight">{idCard.name}</h2>

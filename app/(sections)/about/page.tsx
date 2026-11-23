@@ -41,6 +41,23 @@ export default function AboutPage() {
       <p className="mt-4 text-sm text-muted">CV download coming soon.</p>
       <SectionHeading>Work experience</SectionHeading>
       <Timeline items={about.experience} label="Work experience" />
+      <SectionHeading>Skills</SectionHeading>
+      <dl className="grid gap-4 sm:grid-cols-2">
+        {about.skills.map((s) => (
+          <div key={s.category} className="rounded-md border-2 border-line bg-panel-alt p-3">
+            <dt className="font-pixel text-sm uppercase text-accent">{s.category}</dt>
+            <dd className="mt-2">
+              <ul className="flex flex-wrap gap-2">
+                {s.items.map((i) => (
+                  <li key={i} className="rounded-sm bg-accent-soft px-2 py-1 text-sm text-ink">
+                    {i}
+                  </li>
+                ))}
+              </ul>
+            </dd>
+          </div>
+        ))}
+      </dl>
       <SectionHeading>Education</SectionHeading>
       <Timeline items={about.education} label="Education" />
       <SectionHeading>Activities &amp; awards</SectionHeading>

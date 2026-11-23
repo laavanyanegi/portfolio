@@ -76,6 +76,25 @@ export const about: About = {
       summary: "Managed campaign documentation, joined welfare drives and supported cross-team coordination.",
     },
   ],
+  skills: [
+    {
+      category: "Product",
+      items: [
+        "Product Strategy",
+        "User Research",
+        "User Stories",
+        "Writing PRDs",
+        "Growth Strategy",
+        "GTM Strategy",
+        "Prioritisation",
+        "Prototyping",
+      ],
+    },
+    { category: "Analytics", items: ["SQL", "GA4", "Excel / Google Sheets"] },
+    { category: "Design", items: ["Figma", "Framer", "Miro", "draw.io", "Canva"] },
+    { category: "GenAI", items: ["Lovable AI", "Notion AI", "Claude", "ChatGPT", "Gemini"] },
+    { category: "Tools", items: ["Google Workspace", "MS Office", "Adobe CC"] },
+  ],
   certificates: [
     {
       title: "UI/UX Designer Professional Certificate",

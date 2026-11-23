@@ -71,6 +71,7 @@ export type About = {
   education: TimelineEntry[];
   activities: TimelineEntry[];
   certificates: TimelineEntry[];
+  skills: { category: string; items: string[] }[];
 };
 
 export type ContactLink = {

@@ -20,7 +20,13 @@ export default function CreativesPage() {
           <section key={g.id}>
             <SectionHeading>{g.heading}</SectionHeading>
             {items.length === 0 ? (
-              <ComingSoon>Coming soon.</ComingSoon>
+              <ComingSoon>
+                <span className="font-pixel mb-2 inline-block rounded-sm bg-accent-soft px-2 py-1 text-xs uppercase text-ink">
+                  Work in progress
+                </span>
+                <br />
+                Coming soon.
+              </ComingSoon>
             ) : (
               <CardRow label={g.heading}>
                 {items.map((c) => {
