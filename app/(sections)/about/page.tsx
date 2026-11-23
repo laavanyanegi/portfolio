@@ -34,12 +34,20 @@ export default function AboutPage() {
   return (
     <>
       <PageTitle>About</PageTitle>
-      <p className="max-w-prose leading-relaxed">
-        Product-minded professional with two years in digital media, where I worked on CMS usability testing, audience
-        analytics and cross-functional collaboration. I am interested in how people experience digital products and in
-        turning friction into better journeys, particularly in consumer fintech. My first product case study redesigned
-        Airtel&apos;s NCMC recharge flow end to end and cut mean recharge time by 49.81% in guerrilla usability testing.
-      </p>
+      <div className="max-w-prose space-y-4 leading-relaxed">
+        <p>
+          I am a product-minded professional who likes turning user friction into better digital experiences. Two years
+          in digital media taught me how people use platforms and how data shows what to fix. I bring user research,
+          prioritisation, PRD writing, analytics and prototyping to the problems I take on, with a particular interest
+          in consumer behaviour and fintech.
+        </p>
+        <p>
+          Away from work, I am a storyteller at heart: I write and publish on Medium, design and make art, and have
+          been part of a student documentary screened at Saptrang Short Fest. I speak Hindi, English and Garhwali, am learning German, and
+          enjoy volunteering and community work. Curious by habit, I am happiest when learning a new skill and building
+          something people actually enjoy using.
+        </p>
+      </div>
       <p className="mt-4 text-sm text-muted">CV download coming soon.</p>
       <SectionHeading>Work experience</SectionHeading>
       <Timeline items={about.experience} label="Work experience" />
