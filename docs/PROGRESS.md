@@ -65,3 +65,4 @@ _(each phase appends: date, what was done, anything left over)_
 - Open conflicts to confirm: St. Stephen's German course dates (resume: Present–Apr 2027; LinkedIn: Sep 2025–Apr 2026); BA start (resume Jun 2021; LinkedIn Nov 2021); Jagran end date (resume Sept 2026; LinkedIn "Present").
 - 2026-11-23 (later 3): About intro rewritten (resume + LinkedIn + Airtel result, no LinkedIn summary copy). Certificate issuers/years filled. German shown as completed Certificate (Sept 2025–Apr 2026) plus in-progress Diploma (Sept 2026–Apr 2027, expected). BA start Nov 2021 (admissions ran Jun–Nov 2021). Jagran end stays Sept 2026 (LinkedIn still says Present; Laavanya will update later).
 - 2026-11-23 (later 4): About intro made universal (PM skills + person beyond work), no project references.
+- 2026-11-23 (later 5): About intro replaced with Laavanya's own wording.

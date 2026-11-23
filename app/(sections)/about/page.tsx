@@ -36,16 +36,15 @@ export default function AboutPage() {
       <PageTitle>About</PageTitle>
       <div className="max-w-prose space-y-4 leading-relaxed">
         <p>
-          I am a product-minded professional who likes turning user friction into better digital experiences. Two years
-          in digital media taught me how people use platforms and how data shows what to fix. I bring user research,
+          I am a product-minded professional who likes turning user friction into better experiences. Two years in
+          digital media taught me how people use platforms and how data shows what to fix. I bring user research,
           prioritisation, PRD writing, analytics and prototyping to the problems I take on, with a particular interest
-          in consumer behaviour and fintech.
+          in learning consumer behaviour and strategising product growth through a user-first approach.
         </p>
         <p>
-          Away from work, I am a storyteller at heart: I write and publish on Medium, design and make art, and have
-          been part of a student documentary screened at Saptrang Short Fest. I speak Hindi, English and Garhwali, am learning German, and
-          enjoy volunteering and community work. Curious by habit, I am happiest when learning a new skill and building
-          something people actually enjoy using.
+          Away from work, I am a storyteller at heart: I write in the after hours and exercise my creative juices. I
+          speak Hindi, English and Garhwali, am learning German, and enjoy volunteering and community work. Curious by
+          habit, I am happiest when learning a new skill and building something people actually enjoy using.
         </p>
       </div>
       <p className="mt-4 text-sm text-muted">CV download coming soon.</p>
