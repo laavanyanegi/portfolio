@@ -1,5 +1,9 @@
 import type { Blog } from "@/lib/types";
 
+// New Medium posts appear on the Work page automatically from this feed (refreshed hourly).
+export const MEDIUM_FEED_URL = "https://medium.com/feed/@laavanyanegi";
+
+// Fallback only: shown if Medium cannot be reached.
 export const blogs: Blog[] = [
   {
     title: "UPI QR-Soundbox Payment Flow: Explained",

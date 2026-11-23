@@ -35,8 +35,10 @@ export default function AboutPage() {
     <>
       <PageTitle>About</PageTitle>
       <p className="max-w-prose leading-relaxed">
-        Product-oriented professional with about two years in digital media, CMS usability improvements, user testing,
-        analytics and cross-functional work. Interested in building customer-centric fintech products.
+        Turning user friction into better digital experiences is where my interest in product management begins. Two
+        years in digital media taught me how people use platforms, how content shapes behaviour and how data shows what
+        to fix. I am drawn to consumer behaviour, product analytics and fintech, and I am building depth across
+        discovery, user research, strategy, prioritisation, PRDs, Agile and experimentation.
       </p>
       <p className="mt-4 text-sm text-muted">CV download coming soon.</p>
       <SectionHeading>Work experience</SectionHeading>

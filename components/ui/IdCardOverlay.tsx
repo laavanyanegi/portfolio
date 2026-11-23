@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useUI } from "@/store/ui";
 import { idCard } from "@/content/idcard";
@@ -75,18 +76,29 @@ export default function IdCardOverlay() {
                 <rect x="4" y="17" width="6" height="5" fill="none" stroke="#9a8f84" strokeWidth="1" />
               </svg>
               <div className="-mt-3 grid w-[min(80vw,26rem)] grid-cols-[6rem_1fr] gap-4 rounded-md border-4 border-brown bg-panel p-4 text-ink shadow-xl sm:grid-cols-[9rem_1fr]">
-                <div
-                  className="font-pixel grid aspect-[3/4] place-items-center rounded-sm bg-accent-soft text-3xl text-ink"
-                  role="img"
-                  aria-label="Headshot placeholder"
-                >
-                  <span className="flex flex-col items-center gap-2">
-                    LN
-                    <span className="font-pixel rounded-sm bg-brown px-1.5 py-0.5 text-[10px] uppercase leading-tight text-on-brown">
-                      Work in progress
+                {idCard.headshot ? (
+                  <Image
+                    src={idCard.headshot}
+                    alt="Portrait of Laavanya Negi"
+                    width={480}
+                    height={640}
+                    sizes="144px"
+                    className="aspect-[3/4] w-full rounded-sm object-cover"
+                  />
+                ) : (
+                  <div
+                    className="font-pixel grid aspect-[3/4] place-items-center rounded-sm bg-accent-soft text-3xl text-ink"
+                    role="img"
+                    aria-label="Headshot placeholder"
+                  >
+                    <span className="flex flex-col items-center gap-2">
+                      LN
+                      <span className="font-pixel rounded-sm bg-brown px-1.5 py-0.5 text-[10px] uppercase leading-tight text-on-brown">
+                        Work in progress
+                      </span>
                     </span>
-                  </span>
-                </div>
+                  </div>
+                )}
                 <div className="min-w-0">
                   <h2 className="font-pixel text-lg leading-tight">{idCard.name}</h2>
                   <p className="font-semibold">{idCard.title}</p>

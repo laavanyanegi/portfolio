@@ -61,3 +61,5 @@ _(each phase appends: date, what was done, anything left over)_
 - About filled from the resume, Contact links filled, two Medium posts added to Work. Sample project removed.
 - Known: dev console shows a pre-existing Next warning about `params` outside Suspense on `/work/[slug]` (build passes).
 - 2026-11-23 (later): Creatives emptied and tagged "Work in progress"; ID card headshot tagged the same; About gained a Skills section (from the resume).
+- 2026-11-23 (later 2): Headshot added (`public/headshot.webp`, cropped from Laavanya's photo) and shown on the ID card. Blogs now come from Medium's public RSS feed (`lib/medium.ts`, cached hourly, feature image + summary + title; fallback list in `content/blogs.ts`) so new posts appear automatically. Contact uses brand icons (react-icons); College projects link removed. About: award/cert/school dates filled; LinkedIn internships, certifications, Saptrang Short Fest and Agile/Scrum added.
+- Open conflicts to confirm: St. Stephen's German course dates (resume: Present–Apr 2027; LinkedIn: Sep 2025–Apr 2026); BA start (resume Jun 2021; LinkedIn Nov 2021); Jagran end date (resume Sept 2026; LinkedIn "Present").

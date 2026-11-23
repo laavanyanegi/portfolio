@@ -15,6 +15,54 @@ export const about: About = {
         "Accredited in Advanced SEO, Creative Writing and Advance Quality Check (in-house training).",
       ],
     },
+    {
+      title: "Editorial Intern",
+      org: "India Today",
+      location: "Noida",
+      period: "Sept 2024 – Dec 2024",
+      highlights: [
+        "Supported editorial operations through research, content preparation and publication coordination across 7+ print assignments.",
+        "Researched artists, made youth magazine visuals in Photoshop and InDesign, and kept structured research notes.",
+      ],
+    },
+    {
+      title: "Content Intern",
+      org: "Fever FM (HT Media Ltd.)",
+      location: "Noida",
+      period: "May 2024 – Aug 2024",
+      highlights: [
+        "Built SEO-led organic content strategy for the Indie'N Folk Project, growing YouTube views from 690K to 1M in 2 months.",
+        "Coordinated scripting, editing and scheduling for interview series with artists including Daler Mehndi, Kavita Seth and King.",
+      ],
+    },
+    {
+      title: "Communications Intern",
+      org: "ASER Centre",
+      location: "Delhi",
+      period: "July 2023 – Aug 2023",
+      highlights: [
+        "Turned field-level education survey data from government reports into publication-ready content for the 'Beyond Basics' campaign.",
+        "Supported report preparation and quality checks across research outputs.",
+      ],
+    },
+    {
+      title: "Marketing Intern",
+      org: "Findonic",
+      location: "Delhi",
+      period: "June 2023 – July 2023",
+      highlights: [
+        "Ran an SEO-led content strategy for an agritech company, contributing to a 12% rise in website traffic in 2 months.",
+      ],
+    },
+    {
+      title: "Marketing Intern",
+      org: "PaperWorks India",
+      location: "Gurugram",
+      period: "Jan 2023 – Apr 2023",
+      highlights: [
+        "Managed Instagram and LinkedIn content and creatives, and tracked campaigns in an Excel content calendar.",
+      ],
+    },
   ],
   education: [
     {
@@ -30,20 +78,25 @@ export const about: About = {
     {
       title: "CBSE (Humanities), High School",
       org: "S. S. Mota Singh Sr. Sec. Model School, Delhi",
-      period: "Dates to be added",
+      period: "April 2019 – June 2021",
     },
   ],
   activities: [
     {
       title: "Finalist, The Social Room Marketing Competition",
       org: "Masters' Union",
-      period: "Year to be added",
-      summary: "Cleared two rounds of an MBA case competition: a fictitious movie launch and an Orkut rebrand campaign.",
+      period: "2023",
+      summary: "Reached the finals after clearing two rounds of an MBA case competition: a fictitious movie launch and an Orkut rebrand campaign.",
     },
     {
       title: "Runner-Up, AdMad Competition",
       org: "Janki Devi Memorial College, University of Delhi",
-      period: "Year to be added",
+      period: "2023",
+    },
+    {
+      title: "Film screening, Saptrang Short Fest",
+      org: "Saptrang Short Fest",
+      period: "2024",
     },
     {
       title: "Social Impact Intern",
@@ -87,6 +140,8 @@ export const about: About = {
         "Growth Strategy",
         "GTM Strategy",
         "Prioritisation",
+        "Agile Methodologies",
+        "Scrum",
         "Prototyping",
       ],
     },
@@ -99,12 +154,16 @@ export const about: About = {
     {
       title: "UI/UX Designer Professional Certificate",
       org: "IBM",
-      period: "Year to be added",
+      period: "2026",
     },
     {
       title: "Fundamentals of Digital Marketing",
       org: "Google",
-      period: "Year to be added",
+      period: "2024",
     },
+    { title: "Claude Code 101", org: "Claude Academy", period: "Year to be added" },
+    { title: "Introduction to Feature Journalism", org: "Issuer to be added", period: "Year to be added" },
+    { title: "Introduction to Digital Journalism", org: "Issuer to be added", period: "Year to be added" },
+    { title: "Fundamentals of Journalism", org: "Issuer to be added", period: "Year to be added" },
   ],
 };

@@ -11,6 +11,4 @@ export const contactLinks: ContactLink[] = [
   { id: "substack", label: "Substack", url: "https://substack.com/@laavanyanegi" },
   { id: "figma", label: "Figma", url: "https://www.figma.com/@laavanyanegi" },
   { id: "behance", label: "Behance", url: "https://www.behance.net/laavanyanegi" },
-  { id: "youtube", label: "YouTube", url: "https://www.youtube.com/@laavanyanegi" },
-  { id: "college-projects", label: "College projects", url: "https://laavanyanegi.my.canva.site/" },
-];
+  { id: "youtube", label: "YouTube", url: "https://www.youtube.com/@laavanyanegi" },];

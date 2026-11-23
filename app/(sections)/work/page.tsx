@@ -2,12 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { visibleProjects } from "@/content/projects";
-import { blogs } from "@/content/blogs";
+import { getBlogs } from "@/lib/medium";
 import { CardRow, ComingSoon, PageTitle, SectionHeading, Thumb } from "@/components/sections/parts";
 
 export const metadata: Metadata = { title: "Work — Laavanya Negi" };
 
-export default function WorkPage() {
+export default async function WorkPage() {
+  const blogs = await getBlogs();
   return (
     <>
       <PageTitle>Work</PageTitle>
@@ -73,7 +74,18 @@ export default function WorkPage() {
           {blogs.map((b) => (
             <li key={b.url + b.title} className="rounded-md border-2 border-line bg-panel-alt p-3">
               <a href={b.url} target="_blank" rel="noopener noreferrer" className="block hover:opacity-80">
-                <Thumb label="Medium" />
+                {b.image ? (
+                  <Image
+                    src={b.image}
+                    alt=""
+                    width={1024}
+                    height={576}
+                    sizes="(min-width: 1024px) 300px, 50vw"
+                    className="aspect-video w-full rounded-sm object-cover"
+                  />
+                ) : (
+                  <Thumb label="Medium" />
+                )}
                 <h3 className="mt-3 text-lg font-semibold">
                   {b.title} <span className="sr-only-text">(opens in a new tab)</span>
                   <span aria-hidden="true"> ↗</span>

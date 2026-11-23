@@ -7,6 +7,7 @@ export const idCard: IdCard = {
   title: "Product Manager",
   location: "DEL/BLR",
   languages: ["Hindi", "English", "German (A2)", "Garhwali"],
+  headshot: "/headshot.webp",
   connectUrl: "", // Carrd URL, to be provided
   pdf: "/id-card.pdf",
 };

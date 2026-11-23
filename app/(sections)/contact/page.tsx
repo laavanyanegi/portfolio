@@ -1,8 +1,34 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
+import {
+  FaBehance,
+  FaEnvelope,
+  FaFigma,
+  FaGithub,
+  FaInstagram,
+  FaLinkedinIn,
+  FaMedium,
+  FaXTwitter,
+  FaYoutube,
+} from "react-icons/fa6";
+import { SiSubstack } from "react-icons/si";
 import { contactLinks } from "@/content/contact";
 import { PageTitle } from "@/components/sections/parts";
 
 export const metadata: Metadata = { title: "Contact — Laavanya Negi" };
+
+const ICONS: Record<string, ReactNode> = {
+  email: <FaEnvelope />,
+  linkedin: <FaLinkedinIn />,
+  github: <FaGithub />,
+  x: <FaXTwitter />,
+  instagram: <FaInstagram />,
+  medium: <FaMedium />,
+  substack: <SiSubstack />,
+  figma: <FaFigma />,
+  behance: <FaBehance />,
+  youtube: <FaYoutube />,
+};
 
 export default function ContactPage() {
   return (
@@ -12,11 +38,8 @@ export default function ContactPage() {
         {contactLinks.map((c) => {
           const row = (
             <span className="flex items-center gap-4">
-              <span
-                className="font-pixel grid h-10 w-10 place-items-center rounded-sm bg-accent-soft text-sm uppercase"
-                aria-hidden="true"
-              >
-                {c.label.slice(0, 2)}
+              <span className="grid h-10 w-10 place-items-center rounded-sm bg-accent-soft text-xl text-ink" aria-hidden="true">
+                {ICONS[c.id] ?? c.label.slice(0, 2)}
               </span>
               <span className="font-semibold">{c.label}</span>
               {!c.url && <span className="ml-auto text-sm text-muted">coming soon</span>}
