@@ -35,10 +35,10 @@ export default function AboutPage() {
     <>
       <PageTitle>About</PageTitle>
       <p className="max-w-prose leading-relaxed">
-        Turning user friction into better digital experiences is where my interest in product management begins. Two
-        years in digital media taught me how people use platforms, how content shapes behaviour and how data shows what
-        to fix. I am drawn to consumer behaviour, product analytics and fintech, and I am building depth across
-        discovery, user research, strategy, prioritisation, PRDs, Agile and experimentation.
+        Product-minded professional with two years in digital media, where I worked on CMS usability testing, audience
+        analytics and cross-functional collaboration. I am interested in how people experience digital products and in
+        turning friction into better journeys, particularly in consumer fintech. My first product case study redesigned
+        Airtel&apos;s NCMC recharge flow end to end and cut mean recharge time by 49.81% in guerrilla usability testing.
       </p>
       <p className="mt-4 text-sm text-muted">CV download coming soon.</p>
       <SectionHeading>Work experience</SectionHeading>

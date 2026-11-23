@@ -1,7 +1,6 @@
 import type { About } from "@/lib/types";
 
 // Source: resume + project-assets/other-section-details.md.
-// "to be added" = not in the resume yet; replace when Laavanya supplies it.
 export const about: About = {
   experience: [
     {
@@ -66,14 +65,19 @@ export const about: About = {
   ],
   education: [
     {
-      title: "Diploma, German",
+      title: "Diploma, German (in progress)",
       org: "St. Stephen's College, University of Delhi",
-      period: "Present – April 2027",
+      period: "Sept 2026 – April 2027 (expected)",
+    },
+    {
+      title: "Certificate, German Language and Literature",
+      org: "St. Stephen's College, University of Delhi",
+      period: "Sept 2025 – April 2026",
     },
     {
       title: "BA (Hons.) Multi Media and Mass Communication (Minor: Sociology)",
       org: "Indraprastha College for Women, University of Delhi",
-      period: "June 2021 – June 2024",
+      period: "Nov 2021 – June 2024",
     },
     {
       title: "CBSE (Humanities), High School",
@@ -94,7 +98,7 @@ export const about: About = {
       period: "2023",
     },
     {
-      title: "Film screening, Saptrang Short Fest",
+      title: "'Rajdhani Na Raas: From Folk to Film', Student Documentary Film Screening",
       org: "Saptrang Short Fest",
       period: "2024",
     },
@@ -161,9 +165,9 @@ export const about: About = {
       org: "Google",
       period: "2024",
     },
-    { title: "Claude Code 101", org: "Claude Academy", period: "Year to be added" },
-    { title: "Introduction to Feature Journalism", org: "Issuer to be added", period: "Year to be added" },
-    { title: "Introduction to Digital Journalism", org: "Issuer to be added", period: "Year to be added" },
-    { title: "Fundamentals of Journalism", org: "Issuer to be added", period: "Year to be added" },
+    { title: "Claude Code 101", org: "Claude Academy", period: "2026" },
+    { title: "Introduction to Feature Journalism", org: "University of Cape Town", period: "2024" },
+    { title: "Introduction to Digital Journalism", org: "Reuters", period: "2024" },
+    { title: "Fundamentals of Journalism", org: "NBCU Academy", period: "2024" },
   ],
 };
