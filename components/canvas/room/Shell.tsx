@@ -5,14 +5,21 @@ import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { ROOM } from "@/lib/roomPalette";
 import { planksTexture, skylineTexture } from "../textures";
-import { BALCONY_DOOR, CENTER, D, H, T, W, WINDOW, type V3 } from "./dims";
-import { Box, useNight } from "./parts";
+import { BALCONY_DOOR, CENTER, D, ENTRY_DOOR, H, T, W, WINDOW, type V3 } from "./dims";
+import { Box, cameraMotion, useNight } from "./parts";
 import type { Wall } from "@/store/ui";
 
 type Side = Wall;
 
 /** Is the camera on the outside of this wall (so it is cut away)? */
 function isCut(side: Side, p: THREE.Vector3) {
+  if (cameraMotion.planeCut) {
+    if (p.y < H) return false;
+    if (side === "west") return p.x < 0;
+    if (side === "east") return p.x > W;
+    if (side === "north") return p.z < 0;
+    return p.z > D;
+  }
   if (side === "west") return p.x < CENTER[0];
   if (side === "east") return p.x > CENTER[0];
   if (side === "north") return p.z < CENTER[2];
@@ -214,7 +221,9 @@ export default function Shell() {
 
       {/* EAST: closet wall */}
       <CutWall side="east">
-        <Box p={[W + T / 2, H / 2, D / 2]} s={[T, H, D + 2 * T]} c={ROOM.wall} />
+        {pieces(D + 2 * T, [{ a0: ENTRY_DOOR.z0 + T, a1: ENTRY_DOOR.z1 + T, y0: 0, y1: ENTRY_DOOR.h }]).map((b, i) => (
+          <Box key={i} p={[W + T / 2, b.y, b.a - T]} s={[T, b.ly, b.la]} c={ROOM.wall} />
+        ))}
         <Box p={[W + T / 2, capY, D / 2]} s={[T, 0.03, D + 2 * T]} c={ROOM.wallCap} cast={false} />
         <Box p={[W - 0.01, 0.04, D / 2]} s={[0.02, 0.08, D]} c={ROOM.frame} cast={false} />
       </CutWall>

@@ -7,6 +7,7 @@ import * as THREE from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import { CHAIR } from "./dims";
+import { smooth, standing, wrap } from "./laavanya";
 import { RIG, VIEW, type P3 } from "./characterRig";
 
 /**
@@ -146,8 +147,11 @@ function buildHairCurtain() {
  * front-facing triangles read the front drawing, the rest the side drawing of the side they face.
  * `all` = may also use the three-quarter drawings (not the forearms, hands and lap: in those
  * drawings one hand rests on her lap instead of the armrest).
+ * `proj` = head and hair: always wear the drawing for the current angle, laid over the whole part as
+ * seen from that angle (never one drawing on the front and another on the cheek, which doubled her
+ * features). Outside her outline the atlas already holds her edge colours (see character-atlas.mjs).
  */
-function paint(geo: THREE.BufferGeometry, frontMin = 0.45, all = true) {
+function paint(geo: THREE.BufferGeometry, frontMin = 0.45, all = true, proj = false) {
   const g = geo.index ? geo.toNonIndexed() : geo;
   const pos = g.attributes.position as THREE.BufferAttribute;
   const uv = new Float32Array(pos.count * 2);
@@ -182,22 +186,22 @@ function paint(geo: THREE.BufferGeometry, frontMin = 0.45, all = true) {
   }
   g.setAttribute("uv", new THREE.BufferAttribute(uv, 2));
   g.setAttribute("aAll", new THREE.BufferAttribute(new Float32Array(pos.count).fill(all ? 1 : 0), 1));
+  g.setAttribute("aProj", new THREE.BufferAttribute(new Float32Array(pos.count).fill(proj ? 1 : 0), 1));
   return g;
 }
 
 function buildBody() {
   const parts: THREE.BufferGeometry[] = [];
   const add = (...g: THREE.BufferGeometry[]) => parts.push(...g.map((x) => paint(x)));
-  // the face falls back to the front drawing until well round the side (no second eye on the cheek)
-  const addFront = (min: number, ...g: THREE.BufferGeometry[]) => parts.push(...g.map((x) => paint(x, min)));
   const addBase = (min: number, ...g: THREE.BufferGeometry[]) => parts.push(...g.map((x) => paint(x, min, false)));
+  const addProj = (...g: THREE.BufferGeometry[]) => parts.push(...g.map((x) => paint(x, 0.2, true, true)));
   const R = RIG;
   const T = R.torso;
   const Hp = R.hips;
 
   // head (tapering to the chin), nose, neck
-  addFront(0.2, headShape());
-  addFront(0.2, ellipsoid(R.nose, [0.014, 0.022, 0.016], [8, 6]));
+  addProj(headShape());
+  addProj(ellipsoid(R.nose, [0.014, 0.022, 0.016], [8, 6]));
   add(...limb(R.neck.a, R.neck.b, R.neck.r));
 
   // floral halter top: waist → chest → sloping shoulders → neckline
@@ -253,12 +257,11 @@ function buildBody() {
   }
 
   // hair: crown, back + sides of the head (open at the face), and the long wavy curtain
-  addFront(-0.3, ellipsoid([0, 1.175, -0.015], [0.104, 0.152, 0.124], [24, 10], undefined, [0, Math.PI * 0.36]));
-  addFront(
-    -0.3,
+  addProj(ellipsoid([0, 1.175, -0.015], [0.104, 0.152, 0.124], [24, 10], undefined, [0, Math.PI * 0.36]));
+  addProj(
     ellipsoid([0, 1.175, -0.015], [0.106, 0.152, 0.126], [24, 14], [Math.PI / 2 + 0.85, Math.PI * 2 - 1.7], [Math.PI * 0.3, Math.PI * 0.62]),
   );
-  addFront(-0.3, buildHairCurtain());
+  addProj(buildHairCurtain());
 
   const merged = mergeGeometries(parts);
   merged.computeBoundingSphere();
@@ -438,20 +441,20 @@ function Jewellery() {
       {/* watch on her left wrist */}
       <mesh {...band(1, 0.93)}>
         <torusGeometry args={[0.033, 0.009, 6, 14]} />
-        <meshStandardMaterial color={C.watch} roughness={0.5} />
+        <meshStandardMaterial color={C.watch} roughness={0.5} transparent />
       </mesh>
       {/* beaded bracelets on her right wrist */}
       {[0.9, 0.97].map((t, i) => (
         <mesh key={t} {...band(-1, t)}>
           <torusGeometry args={[0.034, 0.008, 5, 12]} />
-          <meshStandardMaterial color={i ? C.beadB : C.beadA} roughness={0.6} />
+          <meshStandardMaterial color={i ? C.beadB : C.beadA} roughness={0.6} transparent />
         </mesh>
       ))}
       {/* pearl earrings */}
       {[R.earring, mirror(R.earring)].map((p, i) => (
         <mesh key={i} position={p}>
           <sphereGeometry args={[0.011, 8, 6]} />
-          <meshStandardMaterial color={C.pearl} roughness={0.3} />
+          <meshStandardMaterial color={C.pearl} roughness={0.3} transparent />
         </mesh>
       ))}
     </group>
@@ -479,7 +482,7 @@ function Braid() {
       {beads.map((b, i) => (
         <mesh key={i} position={b.p} quaternion={b.q} scale={[0.017, 0.011, 0.012]} castShadow>
           <sphereGeometry args={[1, 8, 6]} />
-          <meshStandardMaterial color={C.braid} roughness={0.9} />
+          <meshStandardMaterial color={C.braid} roughness={0.9} transparent />
         </mesh>
       ))}
     </group>
@@ -489,6 +492,9 @@ function Braid() {
 /* ───────── painting that follows the viewing angle ───────── */
 
 // the drawings sorted by the angle they are seen from (−90° right side … +90° left side)
+/** Height (m) of the top of her hair in the front drawings; above it they hold background grey. */
+const HAIR_TOP_Y = 1.295;
+
 const VIEW_ORDER = VIEW.views.map((v, i) => ({ a: v.angle, i })).sort((x, y) => x.a - y.a);
 
 /** Which two drawings to show for a camera at angle `rel` round her, and how far to fade between them. */
@@ -501,8 +507,12 @@ function pickViews(rel: number): [number, number, number] {
     const A = VIEW_ORDER[k];
     const B = VIEW_ORDER[k + 1];
     if (rel <= B.a) {
-      // use the nearer drawing, with a quick fade at the halfway angle so features never double up for long
-      const t = Math.min(1, Math.max(0, ((rel - A.a) / (B.a - A.a) - 0.42) / 0.16));
+      // use the nearer drawing, with a quick fade so features never double up for long. Between a
+      // three-quarter drawing (25°) and a side one (90°) the switch comes late (~68°): her drawn
+      // three-quarter face holds up well that far round, the side profile only near side-on.
+      const wide = Math.abs(B.a - A.a) > 0.8;
+      const mid = !wide ? 0.5 : Math.abs(B.a) > Math.abs(A.a) ? 0.66 : 0.34;
+      const t = Math.min(1, Math.max(0, ((rel - A.a) / (B.a - A.a) - (mid - 0.07)) / 0.14));
       return [A.i, B.i, t * t * (3 - 2 * t)];
     }
   }
@@ -525,7 +535,8 @@ function makePaintMaterial(atlas: THREE.Texture) {
     uViewMix: { value: 0 },
     uGlow: { value: 0.2 },
   };
-  const m = new THREE.MeshStandardMaterial({ roughness: 1, side: THREE.DoubleSide });
+  // transparent so she can fade in as she sits down (fully opaque the rest of the time)
+  const m = new THREE.MeshStandardMaterial({ roughness: 1, side: THREE.DoubleSide, transparent: true });
   m.userData.uniforms = uniforms;
   m.onBeforeCompile = (sh) => {
     Object.assign(sh.uniforms, uniforms);
@@ -534,10 +545,12 @@ function makePaintMaterial(atlas: THREE.Texture) {
         "#include <common>",
         `#include <common>
 attribute float aAll;
+attribute float aProj;
 varying vec3 vBodyPos;
 varying vec3 vBodyNormal;
 varying vec2 vFallbackUv;
-varying float vAll;`,
+varying float vAll;
+varying float vProj;`,
       )
       .replace(
         "#include <begin_vertex>",
@@ -545,7 +558,8 @@ varying float vAll;`,
 vBodyPos = position;
 vBodyNormal = normal;
 vFallbackUv = uv;
-vAll = aAll;`,
+vAll = aAll;
+vProj = aProj;`,
       );
     sh.fragmentShader = sh.fragmentShader
       .replace(
@@ -561,14 +575,19 @@ varying vec3 vBodyPos;
 varying vec3 vBodyNormal;
 varying vec2 vFallbackUv;
 varying float vAll;
+varying float vProj;
 // tiles 3+ are the three-quarter drawings
 vec3 paintFrom(int i) {
   float a = uViews[i].x;
   vec3 dir = vec3(sin(a), 0.0, cos(a));
-  if ((i >= 3 && vAll < 0.5) || dot(normalize(vBodyNormal), dir) < 0.5) return texture2D(uAtlas, vFallbackUv).rgb;
+  bool proj = vProj > 0.5;
+  if (!proj && ((i >= 3 && vAll < 0.5) || dot(normalize(vBodyNormal), dir) < 0.5)) return texture2D(uAtlas, vFallbackUv).rgb;
   float across = vBodyPos.x * cos(a) - vBodyPos.z * sin(a);
   float px = clamp(uViews[i].y + across / ${M}, 1.0, ${VIEW.w - 1}.0);
-  float py = clamp(${VIEW.h}.0 - vBodyPos.y / ${M}, 1.0, ${VIEW.h - 1}.0);
+  // the crown of her head: above her hairline the front drawings hold leftover grid grey, so the
+  // top of the head takes the topmost row of her hair instead
+  float y = proj ? min(vBodyPos.y, ${HAIR_TOP_Y.toFixed(3)}) : vBodyPos.y;
+  float py = clamp(${VIEW.h}.0 - y / ${M}, 1.0, ${VIEW.h - 1}.0);
   return texture2D(uAtlas, vec2((float(i) * ${VIEW.w}.0 + px) / ${VIEW.w * N}.0, 1.0 - py / ${VIEW.h}.0)).rgb;
 }`,
       )
@@ -625,27 +644,54 @@ function Body() {
   );
 }
 
-const wrap = (a: number) => Math.atan2(Math.sin(a), Math.cos(a));
-
 /**
- * While `spinning`, she lazily swivels round (a push with her feet, then coasting).
- * Otherwise she turns to face the visitor and stays still.
+ * While `spinning`, she lazily swivels round (a push with her feet, then coasting), easing into it
+ * after she sits down. Otherwise she turns to face the visitor (or her laptop, with Work open) and
+ * stays still. While she is on her feet only the chair shows; as she sits down (`standing.seat` going
+ * 0 → 1) she fades in, and the chair turns to meet her (`standing.chairFace`).
  */
-export default function Character({ spinning }: { spinning: boolean }) {
+export default function Character({ spinning, faceDesk = false }: { spinning: boolean; faceDesk?: boolean }) {
   const swivel = useRef<THREE.Group>(null);
+  const body = useRef<THREE.Group>(null);
   const angle = useRef<number | null>(null);
+  const spin = useRef(0); // 0 → 1: how far into her spin she is (eases in after sitting down)
+  const mats = useRef<THREE.Material[] | null>(null);
+  const shown = useRef(-1);
 
   useFrame(({ camera, clock }, dt) => {
+    const b = body.current;
+    if (b) {
+      const op = smooth(standing.seat, 0, 0.7);
+      b.visible = op > 0.001;
+      if (op !== shown.current) {
+        shown.current = op;
+        if (!mats.current) {
+          const list: THREE.Material[] = [];
+          b.traverse((o) => {
+            const m = (o as THREE.Mesh).material as THREE.Material | undefined;
+            if (m) list.push(m);
+          });
+          if (list.length) mats.current = list;
+        }
+        for (const m of mats.current ?? []) m.opacity = op;
+      }
+    }
     const g = swivel.current;
     if (!g) return;
     const toCam = Math.atan2(camera.position.x - CHAIR[0], camera.position.z - CHAIR[2]);
     if (angle.current === null) angle.current = toCam;
-    if (spinning) {
+    const seated = standing.seat >= 1;
+    spin.current = spinning && seated && standing.chairFace === null ? Math.min(1, spin.current + dt / 1.6) : 0;
+    if (spin.current > 0) {
       const push = 0.55 + 0.45 * Math.max(0, Math.sin(clock.elapsedTime * 1.1));
-      angle.current += dt * ((Math.PI * 2) / 5) * push * 1.4;
+      angle.current += dt * ((Math.PI * 2) / 5) * push * 1.4 * smooth(spin.current, 0, 1);
     } else {
-      angle.current += wrap(toCam - angle.current) * Math.min(1, dt * 3);
+      // the desk is towards +z
+      const goal = standing.chairFace ?? (faceDesk ? 0 : toCam);
+      angle.current += wrap(goal - angle.current) * Math.min(1, dt * 4);
     }
+    angle.current = wrap(angle.current);
+    standing.chairAngle = angle.current;
     g.rotation.y = angle.current;
   });
 
@@ -654,7 +700,9 @@ export default function Character({ spinning }: { spinning: boolean }) {
       <ChairBase />
       <group ref={swivel}>
         <SwivelTop />
-        <Body />
+        <group ref={body} visible={false}>
+          <Body />
+        </group>
       </group>
     </group>
   );

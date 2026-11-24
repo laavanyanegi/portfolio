@@ -14,7 +14,8 @@ const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
  * Night: moonlight, purple desk lamp (with shadows), amber bedside lamp, floor lamp, mirror bulbs, laptop glow.
  * Every light always exists and only its intensity/colour fades, so switching never stutters.
  */
-export default function Lights() {
+/** `softAmber`: the Creatives close-up is open, right next to the amber bedside lamp, so it glides down a little. */
+export default function Lights({ softAmber = false }: { softAmber?: boolean }) {
   const t = useNight();
   const target = useMemo(() => {
     const o = new THREE.Object3D();
@@ -29,6 +30,7 @@ export default function Lights() {
   const fill = useRef<THREE.PointLight>(null);
   const floorLamp = useRef<THREE.PointLight>(null);
   const mirror = useRef<THREE.PointLight>(null);
+  const amberDim = useRef(1);
   const c = useMemo(
     () => ({
       sun: new THREE.Color(ROOM.sun),
@@ -41,8 +43,9 @@ export default function Lights() {
     [],
   );
 
-  useFrame(() => {
+  useFrame((_, dt) => {
     const n = t.current;
+    amberDim.current += ((softAmber ? 0.55 : 1) - amberDim.current) * Math.min(1, dt * 2.5);
     if (sun.current) {
       sun.current.intensity = lerp(6, 0.35, n);
       sun.current.color.copy(c.sun).lerp(c.moon, n);
@@ -53,7 +56,7 @@ export default function Lights() {
       hemi.current.groundColor.copy(c.gndD).lerp(c.gndN, n);
     }
     if (desk.current) desk.current.intensity = 3.2 * n;
-    if (amber.current) amber.current.intensity = 2.4 * n;
+    if (amber.current) amber.current.intensity = 2.4 * n * amberDim.current;
     if (screen.current) screen.current.intensity = 0.6 * n;
     if (fill.current) fill.current.intensity = 1.1 * n;
     if (floorLamp.current) floorLamp.current.intensity = 2.6 * n;

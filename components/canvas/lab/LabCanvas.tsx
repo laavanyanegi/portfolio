@@ -38,7 +38,7 @@ export default function LabCanvas({ night, reducedMotion }: { night: boolean; re
   ];
   return (
     <Canvas
-      shadows
+      shadows="percentage"
       dpr={1}
       gl={{ antialias: false, powerPreference: "high-performance" }}
       aria-label="Pixel-art preview of the desk and balcony corner of Laavanya's room"

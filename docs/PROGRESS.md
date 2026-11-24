@@ -8,7 +8,7 @@
 | 2 | Look test: one room corner in pixel style, day/night prototype at `/lab` (approval gate) | Opus | ✅ approved 2026-11-23 (values locked in `store/lab.ts`) |
 | 3 | Content v1: first case study, About, Contact, ID card → **start applying** | Sonnet | ✅ done 2026-11-23 (placeholders remain, see below) |
 | 4 | The room: full 3D room, both views, flip arrows, floating labels, spinning character, day/night lighting | Opus | ✅ done 2026-11-24 (`docs/phases/04-the-room.md`); four views, room keeps getting tweaks |
-| 5 | Entrance + motion: knock screen, first-person welcome, camera choreography, section zoom | Opus | — |
+| 5 | Entrance + motion: knock screen, first-person welcome, camera choreography, section zoom | Opus | ✅ done 2026-11-24 (`docs/phases/05-entrance-and-motion.md`) |
 | 6 | Mobile world: bed point of view, 360° orb, ID icon, haptics, lighter scene | Opus | — |
 | 7 | Brand + polish: design system swap, accessibility, performance, SEO/OG | Sonnet | — |
 | ∞ | Ongoing content: projects, blogs, creatives | Haiku/Sonnet | — |
@@ -96,3 +96,42 @@ _(each phase appends: date, what was done, anything left over)_
 - Mirror: the little hanging pot on top removed.
 - Phase 4 closed 2026-11-24: build passes, committed and pushed. Laavanya approved her birthday-dog photo being public. `/lab` stays (unlinked, noindex) for now.
 - **Next:** Phase 5 (entrance + motion) in a new session. Room tweaks can continue alongside. Mobile layout overlap is left for Phase 6.
+
+### 2026-11-24: Phase 5 (entrance + motion), part 1: the entrance
+- Spec: `docs/phases/05-entrance-and-motion.md`. No hallway: the knock screen is the 3D entry door seen from outside (outside face of the closet wall, doormat, a warm light).
+- Entrance state lives in `store/intro.ts` (knock → opening → greeting → walking → done), once per browser session from `/`. `/?knock` replays it for review. Deep links, repeat visits and no-WebGL skip it. Home UI and labels stay hidden (but in the page) until it ends, then fade in.
+- 3D: `components/canvas/room/Entrance.tsx` (standing sprite, outside of the door, entry camera + walk-in), the entry door now has a real doorway, a hinged leaf and a lever on both faces (`ViewB.tsx`). 2D: `components/ui/EntryOverlay.tsx` ("knock knock" + pixel fist, speech bubble pinned above her head, full-screen click targets). Wording in `content/intro.ts`.
+- Standing Laavanya is a flat sprite from Laavanya's full-body drawings and walk-frame sheet (sent 2026-11-24, saved in `docs/reference/character/standing-full-*.webp` and `character-walk-frame.webp`), built by `scripts/standing-sprite.mjs`. Black flats only; the walk frames play while she walks.
+- Walk-in verified frame by frame (slowed 5× for capture): smooth, no wall flicker, no jump at the hand-off to the home camera.
+- Known: another session's dev server on :3000 once served a stale stylesheet (bubble box missing) until it recompiled.
+- Decisions for the section zoom: laptop close-up shows a generic browser window, nothing specific. Gallery frames stay ambiguous; Laavanya will send creatives one at a time to add.
+
+### 2026-11-24: Phase 5, part 2: section zoom
+- The home camera (still isometric) closes in on the open section's spot and turns to the nearest view that shows its wall; going home it pulls back out. Framing per section in `components/canvas/room/sections.ts` (`SECTION_SHOTS`). Deep links start already zoomed in.
+- She moves with the route (`components/canvas/room/Walker.tsx`): Work = stays seated and swivels to the laptop; About / Creatives / Contact = stands up, walks a route through the open middle of the room (`ROUTES`) to a spot beside the bookshelf / under the gallery / inside the door, and turns to face the visitor. Spot to spot she walks straight across; home = walks back and sits.
+- Laptop screen = a generic browser window texture (`browserScreenTexture`), nothing specific on it.
+- Section panel (`components/ui/SectionPanel.tsx`) fades in ~0.85s after opening a section from home, once the camera has closed in; direct visits and section-to-section show it at once. The hover glow is cleared on every page change.
+- Going home from the top bar's room icon: the panel and top bar fade out (0.3s), then the camera pulls back. (Browser back skips the fade.)
+- Next keeps a left page alive in the background, so the panel's fade-in restarts each time it is shown (`useLayoutEffect` in SectionPanel), not only when first built.
+- Checked: all four close-ups by day and night (standing Laavanya's own glow now dims at night, she was washing out orange), keyboard only (Tab order on home: ID card, day/night, Work, Creatives, About, Contact; Enter opens a section with the full zoom; Tab then reaches the room icon with a visible focus ring; Enter on it fades out and returns home).
+- Known: after returning home by keyboard, focus goes back to the top of the page (Next's default). Mobile has no turn arrows by design (VISION 5.3: the 360° orb replaces them in Phase 6).
+- Build passes.
+
+### 2026-11-24: Phase 5, part 3: final fixes + checks
+- **Decision (Laavanya):** every open or reload of the main link starts at the knock screen; direct section links always skip it; going home from inside never replays it. (Replaces "once per session".)
+- Greeting shortened to 1.4s (entrance ≈4.9s after the knock).
+- Keyboard: coming home, focus goes to the button of the section just left.
+- Browser Back from a section fades out a snapshot of the page (listens to the browser's navigation event, which fires before Next swaps the page; popstate as fallback).
+- Night Creatives close-up: the amber bedside lamp glides to ~55% while it's open.
+- **Bug fixed:** without WebGL the 3D library crashed the whole page. Now the room isn't loaded without WebGL, and an error boundary drops only the room if it ever fails (pages keep working, entrance ends).
+- Phones: the door view widens on portrait screens so the doorway, Laavanya and the bubble fit.
+- Checked: reduced motion (door + greeting, then a cut; sections jump), no-WebGL (no knock, working home and sections), 375px (knock, greeting, case study readable, no sideways scroll), case-study page uses the Work close-up (by code; the preview was backgrounded for the picture).
+
+### 2026-11-24: Phase 5, part 4: sitting down, her face, bug sweep
+- **Sitting down / getting up** (Laavanya: "walks into the middle of the chair, then cuts to sitting"). She now walks to a spot in front of the chair, turns her back to it, and lowers into it: her drawing slides down and back and fades while her seated model fades in (~0.5s); the chair turns to meet her first, and her spin eases in over ~1.6s. Getting up for a section is the reverse (chair turns to the room, she rises and steps out). Shared state in `components/canvas/room/laavanya.ts` (`standing.seat` 0→1, `chairFace`); `Walker.tsx` runs seated → rising → walking → sitting/standing. She never sits or stands on the desk side.
+- **Her face** (Laavanya: "hair and side profiles are messing the face"). Head, nose and hair now wear one drawing at a time, laid over the whole head from the current angle, instead of a drawing per surface direction (which put the side profile's eye on her cheek next to the front eyes, and hair strands across her face). The switch from the three-quarter drawing to the side profile moved from ~57° to ~68°. The grey cap on her crown came from leftover grid grey above her hair in the front drawings; the crown now samples her hair's top row.
+- **Bug sweep:** "Taking a while? Come straight in" appears if the room hasn't loaded after 10s (nobody stuck at the door). Leaving `/` mid-entrance (Back/Forward) ends it. A failed trip home un-fades the page after 2s. The 3D-support check now releases its test context (browsers allow only a few). Shadow setting updated (three.js removed the old soft type; console warning gone). The case-study page reads its address inside a Suspense boundary (Next's dev error gone). Console is clean on `/` and a case study.
+- The error boundary was proven when the preview's GPU refused a context: the room dropped out and the page kept working.
+- Build and lint pass.
+- Phase 5 closed 2026-11-24: approved by Laavanya, committed and pushed (Vercel deploys from `main`).
+- **Next:** Phase 6 (mobile world: bed point of view, 360° orb, ID icon, haptics, lighter scene) in a new session. Waiting on Laavanya: creatives for the gallery frames (one at a time).

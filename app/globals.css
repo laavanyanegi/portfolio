@@ -141,6 +141,71 @@ body {
   }
 }
 
+/* ───── entrance ───── */
+.speech-bubble {
+  position: relative;
+  width: max-content;
+  max-width: min(22rem, 80vw);
+  padding: 0.6rem 0.85rem;
+  background: var(--panel);
+  color: var(--ink);
+  border: 2px solid var(--brown);
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.3);
+  font-size: 0.95rem;
+  line-height: 1.35;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(0.4rem) scale(0.96);
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+.speech-bubble[data-show="true"] {
+  opacity: 1;
+  transform: none;
+}
+.speech-bubble::after {
+  /* tail pointing down at her */
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  width: 0.7rem;
+  height: 0.7rem;
+  background: var(--panel);
+  border-right: 2px solid var(--brown);
+  border-bottom: 2px solid var(--brown);
+  transform: translate(-50%, -0.35rem) rotate(45deg);
+}
+.knock-hand {
+  transform-origin: 80% 80%;
+  animation: knock 1.6s ease-in-out infinite;
+}
+@keyframes knock {
+  0%,
+  40%,
+  100% {
+    transform: rotate(0);
+  }
+  10%,
+  30% {
+    transform: rotate(-14deg) translateX(-4px);
+  }
+  20% {
+    transform: rotate(0);
+  }
+}
+/* section panel: waits for the camera to close in on the spot, then fades in */
+.panel-arrive {
+  animation: fade-in-up 0.45s ease 0.85s both;
+}
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -148,5 +213,8 @@ body {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+  .panel-arrive {
+    animation: none !important;
   }
 }

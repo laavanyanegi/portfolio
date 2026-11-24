@@ -1,15 +1,40 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useUI } from "@/store/ui";
 import { sections } from "@/content/nav";
 import HandleButton from "./HandleButton";
 import ThemeToggle from "./ThemeToggle";
 
+/** How long the section panel takes to fade out before the room takes over (matches SectionPanel). */
+const LEAVE_MS = 300;
+
 export default function TopBar({ pathname }: { pathname: string }) {
+  const router = useRouter();
+  const leaving = useUI((s) => s.leaving);
+
+  // back to the room: fade the page out first, then let the camera pull back
+  const goHome = (e: React.MouseEvent) => {
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return; // new tab etc.
+    e.preventDefault();
+    if (useUI.getState().leaving) return;
+    useUI.setState({ leaving: true });
+    const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.setTimeout(() => router.push("/"), still ? 0 : LEAVE_MS);
+    // if the page change never happens (an error), bring the page back rather than leave it faded out
+    window.setTimeout(() => {
+      if (window.location.pathname !== "/") useUI.setState({ leaving: false });
+    }, 2000);
+  };
+
   return (
-    <header className="fixed inset-x-0 top-0 z-20 flex flex-wrap items-end gap-x-3 gap-y-1 px-2 pt-2 md:flex-nowrap md:px-4 md:pt-3">
+    <header
+      style={{ opacity: leaving ? 0 : 1, transition: "opacity 0.3s ease" }}
+      className="fixed inset-x-0 top-0 z-20 flex flex-wrap items-end gap-x-3 gap-y-1 px-2 pt-2 md:flex-nowrap md:px-4 md:pt-3">
       <Link
         href="/"
+        onClick={goHome}
         aria-label="Back to the room (home)"
         className="mb-1 grid h-10 w-10 shrink-0 place-items-center rounded-sm border-2 border-on-brown bg-brown text-on-brown"
       >

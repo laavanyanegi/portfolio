@@ -7,8 +7,10 @@ import { ROOM } from "@/lib/roomPalette";
 import { useUI, type Spot } from "@/store/ui";
 import type { V3 } from "./dims";
 
-/** How far (radians) the camera still has to turn to reach the current view; 0 once it has settled. */
-export const cameraMotion = { turning: 0 };
+/** `turning`: how far (radians) the camera still has to turn to reach the current view; 0 once settled.
+ *  `planeCut`: during the entrance a wall is only cut once the camera is above it and has passed
+ *  over it (so first-person shots show every wall, and nothing flickers as the camera rises). */
+export const cameraMotion = { turning: 0, planeCut: false };
 
 /** 0 = day, 1 = night. Fades over ~1s; read it inside useFrame. */
 export const NightCtx = createContext<{ current: number }>({ current: 0 });

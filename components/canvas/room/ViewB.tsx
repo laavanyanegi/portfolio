@@ -6,7 +6,8 @@ import { useTexture } from "@react-three/drei";
 import * as THREE from "three";
 import { ROOM } from "@/lib/roomPalette";
 import { creamRugTexture, mirrorTexture } from "../textures";
-import { ENTRY_DOOR, FLOOR_LAMP, LIGHT_SWITCH, MIRROR, W } from "./dims";
+import { ENTRY_DOOR, FLOOR_LAMP, LIGHT_SWITCH, MIRROR, T, W } from "./dims";
+import { useIntro } from "@/store/intro";
 import { Box, Cyl, Glow, NightGlow } from "./parts";
 import { CutWall } from "./Shell";
 
@@ -302,25 +303,71 @@ function LightSwitch({ night, onToggle, enabled }: { night: boolean; onToggle: (
   );
 }
 
-/** Dark-wood entry door with two raised panels and a silver lever (the Contact spot). */
+/** How far the entry door is open, in radians (it swings into the room on hinges at its south edge). */
+function doorAngle(now: number) {
+  const { stage, since } = useIntro.getState();
+  const e = (now - since) / 1000;
+  const OPEN = 1.62;
+  if (stage === "opening") {
+    if (e < 0.24) return Math.sin(e * 80) * 0.006; // the knock rattles it
+    const t = Math.min(1, (e - 0.24) / 0.75);
+    return OPEN * (1 - Math.pow(1 - t, 3));
+  }
+  if (stage === "greeting" || stage === "walking") return OPEN; // it closes behind her once home shows
+  return 0;
+}
+
+/** Dark-wood entry door with two raised panels and a silver lever on both faces (the Contact spot). */
 function EntryDoor() {
   const { z0, z1, h } = ENTRY_DOOR;
   const wid = z1 - z0;
   const cu = (z0 + z1) / 2;
+  const leaf = useRef<THREE.Group>(null);
+  const angle = useRef(0);
+  useFrame((_, dt) => {
+    if (!leaf.current) return;
+    const goal = doorAngle(performance.now());
+    // closing eases shut; opening follows its own curve
+    angle.current = goal >= angle.current ? goal : angle.current + (goal - angle.current) * Math.min(1, dt * 4);
+    leaf.current.rotation.y = angle.current;
+  });
+  const lc = -wid / 2; // leaf centre, measured from the hinge
+  const lever = (d: number, dir: 1 | -1) => (
+    <group>
+      <Cyl p={[lc - wid / 2 + 0.1, 1.0, d]} rt={0.025} rb={0.025} h={0.01} c={SILVER} cast={false} />
+      <Box p={[lc - wid / 2 + 0.15, 1.0, d + dir * 0.02]} s={[0.11, 0.018, 0.018]} c={SILVER} />
+      <Box p={[lc - wid / 2 + 0.1, 0.92, d]} s={[0.035, 0.06, 0.008]} c={SILVER} cast={false} />
+    </group>
+  );
   return (
     <group>
-      {/* architrave */}
-      <Box p={[z0 - 0.04, (h + 0.06) / 2, 0.02]} s={[0.07, h + 0.06, 0.04]} c="#3a2214" />
-      <Box p={[z1 + 0.04, (h + 0.06) / 2, 0.02]} s={[0.07, h + 0.06, 0.04]} c="#3a2214" />
-      <Box p={[cu, h + 0.05, 0.02]} s={[wid + 0.15, 0.07, 0.04]} c="#3a2214" />
-      {/* leaf + panels */}
-      <Box p={[cu, h / 2, 0.012]} s={[wid, h, 0.024]} c="#4a2a18" />
-      <Box p={[cu, h * 0.71, 0.026]} s={[wid - 0.22, h * 0.42, 0.008]} c="#3a2012" cast={false} />
-      <Box p={[cu, h * 0.25, 0.026]} s={[wid - 0.22, h * 0.36, 0.008]} c="#3a2012" cast={false} />
-      {/* lever handle on the north side */}
-      <Cyl p={[z0 + 0.1, 1.0, 0.03]} rt={0.025} rb={0.025} h={0.01} c={SILVER} cast={false} />
-      <Box p={[z0 + 0.15, 1.0, 0.05]} s={[0.11, 0.018, 0.018]} c={SILVER} />
-      <Box p={[z0 + 0.1, 0.92, 0.03]} s={[0.035, 0.06, 0.008]} c={SILVER} cast={false} />
+      {/* architrave, inside and out */}
+      {[0.02, -T - 0.02].map((d) => (
+        <group key={d}>
+          <Box p={[z0 - 0.04, (h + 0.06) / 2, d]} s={[0.07, h + 0.06, 0.04]} c="#3a2214" />
+          <Box p={[z1 + 0.04, (h + 0.06) / 2, d]} s={[0.07, h + 0.06, 0.04]} c="#3a2214" />
+          <Box p={[cu, h + 0.05, d]} s={[wid + 0.15, 0.07, 0.04]} c="#3a2214" />
+        </group>
+      ))}
+      {/* jamb lining the doorway through the wall */}
+      <Box p={[z0 + 0.015, h / 2, -T / 2]} s={[0.03, h, T]} c="#3a2214" cast={false} />
+      <Box p={[z1 - 0.015, h / 2, -T / 2]} s={[0.03, h, T]} c="#3a2214" cast={false} />
+      <Box p={[cu, h - 0.015, -T / 2]} s={[wid, 0.03, T]} c="#3a2214" cast={false} />
+      <Box p={[cu, 0.006, -T / 2]} s={[wid, 0.012, T + 0.04]} c="#2e1a10" cast={false} />
+      {/* leaf on its hinge, panels and lever on both faces */}
+      <group position={[z1, 0, -0.015]}>
+        <group ref={leaf}>
+          <Box p={[lc, h / 2 - 0.005, 0]} s={[wid - 0.05, h - 0.035, 0.05]} c="#4a2a18" />
+          {[0.029, -0.029].map((d) => (
+            <group key={d}>
+              <Box p={[lc, h * 0.71, d]} s={[wid - 0.22, h * 0.42, 0.008]} c="#3a2012" cast={false} />
+              <Box p={[lc, h * 0.25, d]} s={[wid - 0.22, h * 0.36, 0.008]} c="#3a2012" cast={false} />
+            </group>
+          ))}
+          {lever(0.033, 1)}
+          {lever(-0.033, -1)}
+        </group>
+      </group>
     </group>
   );
 }

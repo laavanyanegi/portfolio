@@ -5,10 +5,10 @@ import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { ROOM } from "@/lib/roomPalette";
 import { useTexture } from "@react-three/drei";
-import { hexBoardTexture, pictureTexture, rugTexture, speakerFrontTexture, type PictureKind } from "../textures";
+import { browserScreenTexture, hexBoardTexture, pictureTexture, rugTexture, speakerFrontTexture, type PictureKind } from "../textures";
 import { BEDSIDE_LAMP, CHAIR, D, W, WINDOW, type V3 } from "./dims";
 import { CutWall } from "./Shell";
-import { Box, Cyl, Glow, NightGlow, Plant } from "./parts";
+import { Box, Cyl, Glow, NightGlow, Plant, useNight } from "./parts";
 import Kuromi from "./Kuromi";
 
 /**
@@ -41,14 +41,27 @@ function Desk() {
       <Box p={[DESK_X, TOP + 0.01, D - 0.34]} s={[0.36, 0.02, 0.25]} c={ROOM.laptop} />
       <group position={[DESK_X, TOP + 0.02, D - 0.215]} rotation={[0.25, 0, 0]}>
         <Box p={[0, 0.12, 0]} s={[0.36, 0.24, 0.012]} c={ROOM.laptop} />
-        <mesh position={[0, 0.125, -0.008]} rotation={[0, Math.PI, 0]} userData={{ ownGlow: true }}>
-          <planeGeometry args={[0.32, 0.2]} />
-          <NightGlow color="#1b2430" glow={ROOM.screenNight} day={0.5} night={1.4} />
-        </mesh>
+        <LaptopScreen />
       </group>
 
       <DeskThings />
     </group>
+  );
+}
+
+/** The laptop screen: a plain open browser window (nothing specific on it), glowing a little more at night. */
+function LaptopScreen() {
+  const tex = useMemo(() => browserScreenTexture(), []);
+  const t = useNight();
+  const mat = useRef<THREE.MeshStandardMaterial>(null);
+  useFrame(() => {
+    if (mat.current) mat.current.emissiveIntensity = 0.55 + 0.35 * t.current;
+  });
+  return (
+    <mesh position={[0, 0.125, -0.008]} rotation={[0, Math.PI, 0]} userData={{ ownGlow: true }}>
+      <planeGeometry args={[0.32, 0.2]} />
+      <meshStandardMaterial ref={mat} map={tex} emissiveMap={tex} emissive="#ffffff" emissiveIntensity={0.55} roughness={0.6} />
+    </mesh>
   );
 }
 

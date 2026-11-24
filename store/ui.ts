@@ -21,6 +21,10 @@ export const VIEW_NAMES = [
 ];
 
 type UIState = {
+  /** the page shown before the current one finished rendering (null on first load) */
+  lastPath: string | null;
+  /** the section panel is fading out on its way back to the room */
+  leaving: boolean;
   idCardOpen: boolean;
   openIdCard: () => void;
   closeIdCard: () => void;
@@ -35,6 +39,8 @@ type UIState = {
 };
 
 export const useUI = create<UIState>((set) => ({
+  lastPath: null,
+  leaving: false,
   idCardOpen: false,
   openIdCard: () => set({ idCardOpen: true }),
   closeIdCard: () => set({ idCardOpen: false }),

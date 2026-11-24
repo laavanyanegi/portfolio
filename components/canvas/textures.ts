@@ -379,3 +379,29 @@ export function creamRugTexture() {
     for (let y = 5; y < 20; y += 4) for (let x = 5 + ((y / 4) % 2) * 2; x < 35; x += 4) c.fillRect(x, y, 2, 1);
   });
 }
+
+/** A generic open browser window for the laptop screen: tab strip, address bar, blank page with soft blocks. Nothing readable. */
+export function browserScreenTexture() {
+  return make(64, 40, (c) => {
+    c.fillStyle = "#dfe3ea"; // window frame + tab strip
+    c.fillRect(0, 0, 64, 40);
+    c.fillStyle = "#f7f8fa"; // active tab
+    c.fillRect(3, 2, 16, 4);
+    c.fillStyle = "#c9ced8"; // other tab
+    c.fillRect(20, 3, 12, 3);
+    c.fillStyle = "#f7f8fa"; // toolbar
+    c.fillRect(0, 6, 64, 5);
+    c.fillStyle = "#e6e9ef"; // address bar
+    c.fillRect(9, 7, 46, 3);
+    c.fillStyle = "#9aa3b2"; // back / forward / reload dots
+    c.fillRect(2, 8, 1, 1);
+    c.fillRect(4, 8, 1, 1);
+    c.fillRect(6, 8, 1, 1);
+    c.fillStyle = "#ffffff"; // page
+    c.fillRect(0, 11, 64, 29);
+    c.fillStyle = "#e9e4f5"; // a soft header block and a few grey lines, nothing legible
+    c.fillRect(6, 14, 52, 7);
+    c.fillStyle = "#d9dde4";
+    for (const [y, w] of [[24, 40], [27, 46], [30, 34], [33, 42]]) c.fillRect(6, y, w, 1);
+  });
+}

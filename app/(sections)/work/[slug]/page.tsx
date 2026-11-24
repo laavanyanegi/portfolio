@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -18,7 +19,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: p ? `${p.title} — Laavanya Negi` : "Work — Laavanya Negi" };
 }
 
-export default async function ProjectPage({ params }: Props) {
+// the page reads its address inside a Suspense boundary, as Next asks (every case study is pre-built anyway)
+export default function ProjectPage({ params }: Props) {
+  return (
+    <Suspense fallback={null}>
+      <Project params={params} />
+    </Suspense>
+  );
+}
+
+async function Project({ params }: Props) {
   const { slug } = await params;
   const p = publishedProjects.find((x) => x.slug === slug);
   if (!p) notFound();

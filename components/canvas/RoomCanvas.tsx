@@ -7,6 +7,8 @@ import { ROOM } from "@/lib/roomPalette";
 import PixelPass from "./PixelPass";
 import CameraRig, { type Drag } from "./room/CameraRig";
 import Character from "./room/Character";
+import Walker from "./room/Walker";
+import type { Spot } from "@/store/ui";
 import { LabelTracker, RoomLabels, type LabelEls } from "./room/Labels";
 import Lights from "./room/Lights";
 import { NightCtx } from "./room/parts";
@@ -15,6 +17,8 @@ import ViewA from "./room/ViewA";
 import ViewB from "./room/ViewB";
 import FairyLights from "./room/FairyLights";
 import { useUI, VIEW_WALLS } from "@/store/ui";
+import { introActive, useIntro } from "@/store/intro";
+import { DoorOutside, EntryCamera, SpeechBubbleTracker, StandingLaavanya } from "./room/Entrance";
 
 /** Fades the night value towards its goal (~1s), and the backdrop colour with it. */
 function NightFader({ night, tRef, instant }: { night: boolean; tRef: { current: number }; instant: boolean }) {
@@ -34,16 +38,21 @@ export default function RoomCanvas({
   night,
   reducedMotion,
   home,
+  section,
   navigate,
   onToggleNight,
 }: {
   night: boolean;
   reducedMotion: boolean;
   home: boolean;
+  /** the open section (from the route), or null on home */
+  section: Spot | null;
   navigate: (href: string) => void;
   onToggleNight: () => void;
 }) {
   const view = useUI((s) => s.view);
+  const stage = useIntro((s) => s.stage);
+  const entering = introActive(stage);
   const t = useRef(night ? 1 : 0);
   const drag = useRef<Drag>({ az: 0, pol: 0 });
   const labelEls: LabelEls = useRef({});
@@ -77,7 +86,7 @@ export default function RoomCanvas({
       onPointerLeave={onUp}
     >
       <Canvas
-        shadows
+        shadows="percentage"
         dpr={1}
         gl={{ antialias: false, powerPreference: "high-performance" }}
         aria-label="Pixel-art view of Laavanya's bedroom"
@@ -86,16 +95,21 @@ export default function RoomCanvas({
       >
         <NightCtx.Provider value={t}>
           <NightFader night={night} tRef={t} instant={reducedMotion} />
-          <CameraRig dragRef={drag} reducedMotion={reducedMotion} />
-          <Lights />
+          <CameraRig dragRef={drag} reducedMotion={reducedMotion} active={!entering} section={section} />
+          <Walker section={section} entering={entering} reducedMotion={reducedMotion} />
+          <EntryCamera active={entering} reducedMotion={reducedMotion} />
+          {entering && <DoorOutside />}
+          <Lights softAmber={section === "creatives"} />
           <Shell />
           <ViewA />
           <ViewB night={night} onToggleNight={onToggleNight} interactive={home && VIEW_WALLS[view].includes("east")} />
           <FairyLights />
           <Suspense fallback={null}>
-            <Character spinning={home && !reducedMotion} />
+            <Character spinning={home && !reducedMotion} faceDesk={section === "work"} />
+            <StandingLaavanya visible={stage !== "pending"} />
           </Suspense>
           {home && <LabelTracker elsRef={labelEls} />}
+          {entering && <SpeechBubbleTracker />}
           <PixelPass mode={night ? "night" : "day"} animate={!reducedMotion} blend={t} />
         </NightCtx.Provider>
       </Canvas>
