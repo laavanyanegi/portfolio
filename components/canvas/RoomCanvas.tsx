@@ -51,8 +51,9 @@ export default function RoomCanvas({
   onToggleNight: () => void;
 }) {
   const view = useUI((s) => s.view);
-  const stage = useIntro((s) => s.stage);
-  const entering = introActive(stage);
+  // re-render only when the entrance starts or ends (each re-render of the room costs a visible frame)
+  const entering = useIntro((s) => introActive(s.stage));
+  const loaded = useIntro((s) => s.stage !== "pending");
   const t = useRef(night ? 1 : 0);
   const drag = useRef<Drag>({ az: 0, pol: 0 });
   const labelEls: LabelEls = useRef({});
@@ -98,7 +99,8 @@ export default function RoomCanvas({
           <CameraRig dragRef={drag} reducedMotion={reducedMotion} active={!entering} section={section} />
           <Walker section={section} entering={entering} reducedMotion={reducedMotion} />
           <EntryCamera active={entering} reducedMotion={reducedMotion} />
-          {entering && <DoorOutside />}
+          {/* stays mounted (light switched off) after the entrance: removing a light makes three.js rebuild every material at once */}
+          <DoorOutside on={entering} />
           <Lights softAmber={section === "creatives"} />
           <Shell />
           <ViewA />
@@ -106,7 +108,7 @@ export default function RoomCanvas({
           <FairyLights />
           <Suspense fallback={null}>
             <Character spinning={home && !reducedMotion} faceDesk={section === "work"} />
-            <StandingLaavanya visible={stage !== "pending"} />
+            <StandingLaavanya visible={loaded} />
           </Suspense>
           {home && <LabelTracker elsRef={labelEls} />}
           {entering && <SpeechBubbleTracker />}

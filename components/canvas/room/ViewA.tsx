@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useMemo, useRef } from "react";
+import { Suspense, useMemo, useRef, memo } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { ROOM } from "@/lib/roomPalette";
@@ -485,7 +485,7 @@ function Nightstand() {
   );
 }
 
-export default function ViewA() {
+function ViewA() {
   return (
     <group>
       <WallArtAndRug />
@@ -522,3 +522,6 @@ export default function ViewA() {
     </group>
   );
 }
+
+// the room never changes after it's built: skip re-rendering it when its parent does
+export default memo(ViewA);

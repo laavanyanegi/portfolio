@@ -7,7 +7,15 @@ import * as THREE from "three";
 import { ROOM } from "@/lib/roomPalette";
 import { useIntro } from "@/store/intro";
 import { CENTER, ENTRY_DOOR, T, W } from "./dims";
-import { GREET_SPOT, lerp, placeOnChair, sitSpot, smooth as sm, standing, wrap } from "./laavanya";
+import {
+  GREET_SPOT,
+  lerp,
+  placeOnChair,
+  sitSpot,
+  smooth as sm,
+  standing,
+  wrap,
+} from "./laavanya";
 import { cameraMotion, useNight } from "./parts";
 import { CutWall } from "./Shell";
 import { HOME_VIEW, homeFraming } from "./CameraRig";
@@ -32,11 +40,15 @@ const DOOR_Z = (ENTRY_DOOR.z0 + ENTRY_DOOR.z1) / 2;
 const COLS = 6;
 const ROWS = 3;
 const STAND = { front: 0, back: 1, left: 2, right: 3 } as const;
-const WALK_FRAMES = { front: [4, 5], back: [6, 7, 8, 9], left: [10, 11, 12, 13], right: [14, 15, 16] } as const;
+const WALK_FRAMES = {
+  front: [4, 5],
+  back: [6, 7, 8, 9],
+  left: [10, 11, 12, 13],
+  right: [14, 15, 16],
+} as const;
 const STEP_FPS = 7; // walk frames per second
 const HEIGHT = 1.655; // the tile's height in metres (she is ~1.62 m; the tile has a little headroom)
 const ASPECT = 264 / 480;
-
 
 export function StandingLaavanya({ visible }: { visible: boolean }) {
   const tex = useTexture("/character/standing.webp", (t) => {
@@ -59,21 +71,36 @@ export function StandingLaavanya({ visible }: { visible: boolean }) {
     // as she sits down she lowers into the seat and fades, while her seated model fades in
     const op = 1 - sm(standing.seat, 0.3, 0.95);
     m.opacity = op;
-    m.transparent = op < 1;
     m.alphaTest = Math.max(0.02, 0.5 * op);
     if (shadow.current) shadow.current.opacity = 0.22 * op;
     // her own glow keeps the drawing readable by day; at night the warm grade and lamps light her enough
     m.emissiveIntensity = 0.35 - 0.27 * night.current;
     g.visible = visible && op > 0.02;
     if (!g.visible) return;
-    const toCam = Math.atan2(camera.position.x - standing.x, camera.position.z - standing.z);
+    const toCam = Math.atan2(
+      camera.position.x - standing.x,
+      camera.position.z - standing.z,
+    );
     // which drawing: from where the camera stands relative to the way she faces
     const rel = wrap(toCam - standing.heading);
     const a = Math.abs(rel);
-    const side = a < Math.PI / 4 ? "front" : a > (3 * Math.PI) / 4 ? "back" : rel > 0 ? "left" : "right";
+    const side =
+      a < Math.PI / 4
+        ? "front"
+        : a > (3 * Math.PI) / 4
+          ? "back"
+          : rel > 0
+            ? "left"
+            : "right";
     const frames = WALK_FRAMES[side];
-    const tile = standing.walking ? frames[Math.floor(clock.elapsedTime * STEP_FPS) % frames.length] : STAND[side];
-    if (m.map) m.map.offset.set((tile % COLS) / COLS, 1 - (Math.floor(tile / COLS) + 1) / ROWS);
+    const tile = standing.walking
+      ? frames[Math.floor(clock.elapsedTime * STEP_FPS) % frames.length]
+      : STAND[side];
+    if (m.map)
+      m.map.offset.set(
+        (tile % COLS) / COLS,
+        1 - (Math.floor(tile / COLS) + 1) / ROWS,
+      );
     g.position.set(standing.x, -0.3 * sm(standing.seat, 0, 1), standing.z);
     g.rotation.y = toCam; // always face the camera (turning about the vertical only)
   });
@@ -89,6 +116,8 @@ export function StandingLaavanya({ visible }: { visible: boolean }) {
           emissive="#ffffff"
           emissiveIntensity={0.35}
           alphaTest={0.5}
+          // always see-through-capable: switching it on mid-sit made the browser rebuild the material (a stall)
+          transparent
           roughness={0.9}
           side={THREE.DoubleSide}
         />
@@ -96,7 +125,13 @@ export function StandingLaavanya({ visible }: { visible: boolean }) {
       {/* soft contact shadow under her feet */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.004, 0]}>
         <circleGeometry args={[0.2, 16]} />
-        <meshBasicMaterial ref={shadow} color="#000000" transparent opacity={0.22} depthWrite={false} />
+        <meshBasicMaterial
+          ref={shadow}
+          color="#000000"
+          transparent
+          opacity={0.22}
+          depthWrite={false}
+        />
       </mesh>
     </group>
   );
@@ -122,38 +157,73 @@ export function SpeechBubbleTracker() {
  * Only what the door view needs: the outside face of the closet wall, a strip of floor and a doormat.
  * It hides with the closet wall once the camera has risen over it.
  */
-export function DoorOutside() {
+export function DoorOutside({ on }: { on: boolean }) {
   const t = useNight();
   const light = useRef<THREE.PointLight>(null);
   useFrame(() => {
-    if (light.current) light.current.intensity = 1.6 - 0.9 * t.current; // the night grade brightens warm light a lot
+    // the night grade brightens warm light a lot; off (but kept) once the entrance is over
+    if (light.current) light.current.intensity = on ? 1.6 - 0.9 * t.current : 0;
   });
   return (
     <CutWall side="east">
-      {/* outside face of the wall, wide enough to fill the screen */}
-      {[
-        // [centre z, centre y, width, height]: left of the doorway, right of it, above it
-        [(ENTRY_DOOR.z0 + DOOR_Z - 6) / 2, 1.6, ENTRY_DOOR.z0 - (DOOR_Z - 6), 3.2],
-        [(ENTRY_DOOR.z1 + DOOR_Z + 6) / 2, 1.6, DOOR_Z + 6 - ENTRY_DOOR.z1, 3.2],
-        [DOOR_Z, (ENTRY_DOOR.h + 3.2) / 2, ENTRY_DOOR.z1 - ENTRY_DOOR.z0, 3.2 - ENTRY_DOOR.h],
-      ].map(([z, y, w, h], i) => (
-        <mesh key={i} position={[W + T + 0.002, y, z]} rotation={[0, Math.PI / 2, 0]}>
-          <planeGeometry args={[w, h]} />
-          <meshStandardMaterial color={ROOM.wall} roughness={0.95} />
+      <group visible={on}>
+        {/* outside face of the wall, wide enough to fill the screen */}
+        {[
+          // [centre z, centre y, width, height]: left of the doorway, right of it, above it
+          [
+            (ENTRY_DOOR.z0 + DOOR_Z - 6) / 2,
+            1.6,
+            ENTRY_DOOR.z0 - (DOOR_Z - 6),
+            3.2,
+          ],
+          [
+            (ENTRY_DOOR.z1 + DOOR_Z + 6) / 2,
+            1.6,
+            DOOR_Z + 6 - ENTRY_DOOR.z1,
+            3.2,
+          ],
+          [
+            DOOR_Z,
+            (ENTRY_DOOR.h + 3.2) / 2,
+            ENTRY_DOOR.z1 - ENTRY_DOOR.z0,
+            3.2 - ENTRY_DOOR.h,
+          ],
+        ].map(([z, y, w, h], i) => (
+          <mesh
+            key={i}
+            position={[W + T + 0.002, y, z]}
+            rotation={[0, Math.PI / 2, 0]}
+          >
+            <planeGeometry args={[w, h]} />
+            <meshStandardMaterial color={ROOM.wall} roughness={0.95} />
+          </mesh>
+        ))}
+        {/* floor outside */}
+        <mesh
+          position={[W + T + 2, -0.001, DOOR_Z]}
+          rotation={[-Math.PI / 2, 0, 0]}
+          receiveShadow
+        >
+          <planeGeometry args={[4, 12]} />
+          <meshStandardMaterial color={ROOM.floorSide} roughness={0.9} />
         </mesh>
-      ))}
-      {/* floor outside */}
-      <mesh position={[W + T + 2, -0.001, DOOR_Z]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-        <planeGeometry args={[4, 12]} />
-        <meshStandardMaterial color={ROOM.floorSide} roughness={0.9} />
-      </mesh>
-      {/* doormat */}
-      <mesh position={[W + T + 0.4, 0.008, DOOR_Z]} rotation={[-Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[0.55, 0.85]} />
-        <meshStandardMaterial color="#6b5236" roughness={1} />
-      </mesh>
-      {/* a soft warm light over the door */}
-      <pointLight ref={light} position={[W + T + 0.7, 2.5, DOOR_Z]} color="#ffd7a0" distance={4} decay={1.6} />
+        {/* doormat */}
+        <mesh
+          position={[W + T + 0.4, 0.008, DOOR_Z]}
+          rotation={[-Math.PI / 2, 0, 0]}
+        >
+          <planeGeometry args={[0.55, 0.85]} />
+          <meshStandardMaterial color="#6b5236" roughness={1} />
+        </mesh>
+        {/* a soft warm light over the door */}
+      </group>
+      <pointLight
+        ref={light}
+        position={[W + T + 0.7, 2.5, DOOR_Z]}
+        color="#ffd7a0"
+        distance={4}
+        decay={1.6}
+      />
     </CutWall>
   );
 }
@@ -163,7 +233,13 @@ export function DoorOutside() {
 const EYE = 1.5;
 const FOV = 50;
 /** On tall, narrow (phone) screens the view widens so the doorway and Laavanya still fit side to side. */
-const fovFor = (aspect: number) => Math.max(FOV, THREE.MathUtils.radToDeg(2 * Math.atan(Math.tan(THREE.MathUtils.degToRad(21)) / aspect)));
+const fovFor = (aspect: number) =>
+  Math.max(
+    FOV,
+    THREE.MathUtils.radToDeg(
+      2 * Math.atan(Math.tan(THREE.MathUtils.degToRad(21)) / aspect),
+    ),
+  );
 const FAR_X = W + T + 2.55; // knocking: the door fills most of the screen
 const NEAR_X = W + T + 1.55; // after it opens: a step closer, so she is framed in the doorway
 const GREET_TIME = 1.4; // seconds the greeting stays before she leads the way in (a click skips ahead)
@@ -201,9 +277,21 @@ function walkHer(e: number) {
   if (e >= SIT[0]) placeOnChair(SIT_FACE, sm(e, SIT[0], SIT[1]));
 }
 
-type Shot = { look: THREE.Vector3; r: number; pol: number; az: number; h: number };
+type Shot = {
+  look: THREE.Vector3;
+  r: number;
+  pol: number;
+  az: number;
+  h: number;
+};
 
-export function EntryCamera({ active, reducedMotion }: { active: boolean; reducedMotion: boolean }) {
+export function EntryCamera({
+  active,
+  reducedMotion,
+}: {
+  active: boolean;
+  reducedMotion: boolean;
+}) {
   const cam = useRef<THREE.PerspectiveCamera>(null);
   const x = useRef(FAR_X);
   const look = useMemo(() => new THREE.Vector3(W, 1.12, DOOR_Z), []);
@@ -252,13 +340,20 @@ export function EntryCamera({ active, reducedMotion }: { active: boolean; reduce
       const { nav, zoom } = homeFraming(size.width, size.height);
       // look at her as she walks in, then at the middle of the room
       follow.set(standing.x, 1.15, standing.z);
-      tgt.copy(s0.look).lerp(follow, sm(u, 0, 0.35)).lerp(center, sm(u, 0.3, 0.95));
+      tgt
+        .copy(s0.look)
+        .lerp(follow, sm(u, 0, 0.35))
+        .lerp(center, sm(u, 0.3, 0.95));
       // rise first (so it clears the walls while still inside the room), swing round to the corner after
       const az = lerp(s0.az, HOME_VIEW.az, sm(u, 0.4, 0.95));
       const pol = lerp(s0.pol, HOME_VIEW.polar, sm(u, 0.1, 0.58));
-      const r = Math.exp(lerp(Math.log(s0.r), Math.log(R_FAR), Math.pow(sm(u, 0.18, 1), 2.2)));
+      const r = Math.exp(
+        lerp(Math.log(s0.r), Math.log(R_FAR), Math.pow(sm(u, 0.18, 1), 2.2)),
+      );
       // how much of the room fills the screen height, growing to the home view's framing
-      const h = Math.exp(lerp(Math.log(s0.h), Math.log(size.height / zoom), sm(u, 0.15, 0.9)));
+      const h = Math.exp(
+        lerp(Math.log(s0.h), Math.log(size.height / zoom), sm(u, 0.15, 0.9)),
+      );
       c.position.set(
         tgt.x + r * Math.sin(pol) * Math.sin(az),
         tgt.y + r * Math.cos(pol),
@@ -270,7 +365,15 @@ export function EntryCamera({ active, reducedMotion }: { active: boolean; reduce
       c.far = r + 40;
       // slide the room left of the section buttons, as the home view does
       const shift = (nav / 2) * sm(u, 0.4, 1);
-      if (shift > 0) c.setViewOffset(size.width, size.height, shift, 0, size.width, size.height);
+      if (shift > 0)
+        c.setViewOffset(
+          size.width,
+          size.height,
+          shift,
+          0,
+          size.width,
+          size.height,
+        );
       else c.clearViewOffset();
       c.updateProjectionMatrix();
       if (u >= 1) intro.finish();
@@ -291,5 +394,14 @@ export function EntryCamera({ active, reducedMotion }: { active: boolean; reduce
     c.lookAt(look.set(W - 0.4 * k, 1.12 + 0.16 * k, DOOR_Z));
   });
 
-  return <PerspectiveCamera ref={cam} makeDefault={active} fov={FOV} near={0.05} far={60} position={[FAR_X, EYE, DOOR_Z]} />;
+  return (
+    <PerspectiveCamera
+      ref={cam}
+      makeDefault={active}
+      fov={FOV}
+      near={0.05}
+      far={60}
+      position={[FAR_X, EYE, DOOR_Z]}
+    />
+  );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, type ReactNode } from "react";
+import { useMemo, useRef, type ReactNode, memo } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { ROOM } from "@/lib/roomPalette";
@@ -150,7 +150,7 @@ function Curtains({ o, drop }: { o: Opening; drop: number }) {
   );
 }
 
-export default function Shell() {
+function Shell() {
   const planks = useMemo(() => {
     const t = planksTexture();
     t.repeat.set(4, 3.2);
@@ -230,3 +230,6 @@ export default function Shell() {
     </group>
   );
 }
+
+// the room never changes after it's built: skip re-rendering it when its parent does
+export default memo(Shell);

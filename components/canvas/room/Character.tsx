@@ -657,12 +657,16 @@ export default function Character({ spinning, faceDesk = false }: { spinning: bo
   const spin = useRef(0); // 0 → 1: how far into her spin she is (eases in after sitting down)
   const mats = useRef<THREE.Material[] | null>(null);
   const shown = useRef(-1);
+  const warm = useRef(0); // frames drawn so far
 
   useFrame(({ camera, clock }, dt) => {
     const b = body.current;
     if (b) {
       const op = smooth(standing.seat, 0, 0.7);
-      b.visible = op > 0.001;
+      // her first few frames are drawn fully see-through, so the browser prepares her look while the
+      // knock screen is up rather than in the middle of her sitting down (that stalled a frame)
+      b.visible = op > 0.001 || warm.current < 4;
+      warm.current++;
       if (op !== shown.current) {
         shown.current = op;
         if (!mats.current) {

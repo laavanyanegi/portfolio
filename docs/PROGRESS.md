@@ -135,3 +135,9 @@ _(each phase appends: date, what was done, anything left over)_
 - Build and lint pass.
 - Phase 5 closed 2026-11-24: approved by Laavanya, committed and pushed (Vercel deploys from `main`).
 - **Next:** Phase 6 (mobile world: bed point of view, 360° orb, ID icon, haptics, lighter scene) in a new session. Waiting on Laavanya: creatives for the gallery frames (one at a time).
+
+### 2026-11-24: Phase 5 follow-up: smoothness
+- Laavanya saw the entrance stutter in Chrome. Measured frame by frame: stalls of 100–133 ms at each entrance step and 550 ms at the hand-off to the home view.
+- Causes and fixes: (1) removing the door-outside light when the entrance ended changed the light count, so three.js rebuilt every material: the light now stays mounted, switched off. (2) The whole room re-rendered at every entrance step: the canvas now only re-renders when the entrance starts/ends, and Shell, ViewA and FairyLights are memoised. (3) Her seated model was first drawn mid-sit: it is now drawn see-through for its first frames. (4) The standing sprite switched into transparent mode mid-sit (a material rebuild): it is always transparent now.
+- Production build: entrance 480 frames in 8 s, worst frame 18 ms (was 550 ms). Opening a section: one 50 ms frame at the click (the page itself loading).
+- `.claude/launch.json` gained a `prod` config (`next start` on :3005) for measuring real performance.

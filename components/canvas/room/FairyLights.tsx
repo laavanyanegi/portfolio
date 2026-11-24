@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useMemo, useRef } from "react";
+import { useLayoutEffect, useMemo, useRef, memo } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import type { Wall } from "@/store/ui";
@@ -71,7 +71,7 @@ function LightString({ wall }: { wall: Wall }) {
   );
 }
 
-export default function FairyLights() {
+function FairyLights() {
   const ref = useRef<THREE.Group>(null);
   const settled = useRef(1); // seconds since the camera finished turning
   useFrame((_, dt) => {
@@ -89,3 +89,6 @@ export default function FairyLights() {
     </group>
   );
 }
+
+// the room never changes after it's built: skip re-rendering it when its parent does
+export default memo(FairyLights);
