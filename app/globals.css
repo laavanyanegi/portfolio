@@ -60,7 +60,7 @@ html[data-theme="night"] {
 }
 
 body {
-  background: var(--bg);
+  /* no background here: <html> paints it, so the room canvas (z-index -10) shows above it */
   color: var(--ink);
   font-family: var(--font-body), system-ui, sans-serif;
   min-height: 100dvh;
@@ -82,6 +82,63 @@ body {
   overflow: hidden;
   clip: rect(0 0 0 0);
   white-space: nowrap;
+}
+
+/* floating pixel sign above a room spot (Phase 4) */
+.room-sign-hit {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: block;
+  width: max-content;
+  padding: 0.4rem 0.4rem 1rem; /* bottom room for the pointer tail + bob */
+  text-decoration: none;
+}
+.room-sign {
+  position: relative;
+  display: block;
+  padding: 0.35rem 0.7rem;
+  background: var(--brown);
+  color: var(--on-brown);
+  border: 2px solid var(--on-brown);
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.3);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition:
+    background-color 0.35s ease,
+    color 0.35s ease;
+  animation: sign-bob 2.6s ease-in-out infinite;
+}
+.room-sign::after {
+  /* pointer tail */
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  width: 0.6rem;
+  height: 0.6rem;
+  background: var(--brown);
+  border-right: 2px solid var(--on-brown);
+  border-bottom: 2px solid var(--on-brown);
+  transform: translate(-50%, -0.3rem) rotate(45deg);
+  transition: background-color 0.35s ease;
+}
+.room-sign-hit:hover .room-sign,
+.room-sign-hit:focus-visible .room-sign,
+.room-sign-hit:hover .room-sign::after,
+.room-sign-hit:focus-visible .room-sign::after {
+  background: color-mix(in srgb, var(--brown) 55%, var(--accent));
+}
+@keyframes sign-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-0.3rem);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

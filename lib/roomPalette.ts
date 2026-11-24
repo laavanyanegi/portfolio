@@ -33,6 +33,17 @@ export const ROOM = {
   petCushion: "#e9d6b8",
   railing: "#3a3633",
   balcony: "#8f8a84",
+  curtainDark: "#4a2a1c",
+  curtainLight: "#efe4cf",
+  dresser: "#5f5b58",
+  dresserFront: "#86817c",
+  handle: "#2a2624",
+  sheet: "#efe4cf",
+  blanket: "#c9a27a",
+  throw: "#7a4a30",
+  pillow: "#f6efe2",
+  glow: "#b9a0ea", // hover highlight on a room spot
+  shadowBlob: "#000000",
   // light colours
   sun: "#ffc98a",
   skyFillDay: "#b9cbe8",

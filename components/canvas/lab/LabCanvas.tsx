@@ -6,7 +6,7 @@ import { OrbitControls, OrthographicCamera } from "@react-three/drei";
 import type * as THREE from "three";
 import { ROOM } from "@/lib/roomPalette";
 import CornerScene from "./CornerScene";
-import PixelPass from "./PixelPass";
+import PixelPass from "../PixelPass";
 
 const LOOK_AT: [number, number, number] = [2.1, 0.9, 3.0];
 const AZIMUTH = (3 * Math.PI) / 4; // looking from the north-east into the south-west corner

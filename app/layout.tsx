@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Pixelify_Sans } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
+import RoomLoader from "@/components/canvas/RoomLoader";
 import RoomSlot from "@/components/canvas/RoomSlot";
 import Chrome from "@/components/ui/Chrome";
 import IdCardOverlay from "@/components/ui/IdCardOverlay";
@@ -28,6 +29,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         >
           <ThemeInit />
           <RoomSlot />
+          <RoomLoader />
           <Chrome />
           <main id="main">{children}</main>
           <IdCardOverlay />

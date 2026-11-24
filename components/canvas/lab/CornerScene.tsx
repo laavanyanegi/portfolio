@@ -3,7 +3,7 @@
 import { useMemo, type ReactNode } from "react";
 import * as THREE from "three";
 import { ROOM } from "@/lib/roomPalette";
-import { mandalaTexture, planksTexture, rugTexture, skylineTexture } from "./textures";
+import { mandalaTexture, planksTexture, rugTexture, skylineTexture } from "../textures";
 
 /**
  * South-west corner of the room: study wall (south, z = D) meets balcony wall (west, x = 0).

@@ -3,7 +3,14 @@
 import { useEffect, useMemo, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
-import { useLab, type Mode } from "@/store/lab";
+import { useLab, type LookSettings, type Mode } from "@/store/lab";
+
+/** Day → night look, mixed by t (0 = day, 1 = night). */
+function mix(a: LookSettings, b: LookSettings, t: number): LookSettings {
+  const out = { ...a };
+  for (const k of Object.keys(a) as (keyof LookSettings)[]) out[k] = a[k] + (b[k] - a[k]) * t;
+  return out;
+}
 
 /**
  * The pixel-art look. Renders the scene into a small, low-resolution image, then draws it
@@ -57,7 +64,16 @@ void main() {
   gl_FragColor = vec4(clamp(c, 0.0, 1.0), 1.0);
 }`;
 
-export default function PixelPass({ mode, animate }: { mode: Mode; animate: boolean }) {
+export default function PixelPass({
+  mode,
+  animate,
+  blend,
+}: {
+  mode: Mode;
+  animate: boolean;
+  /** When given, the look fades between the day and night values by blend.current (0…1). */
+  blend?: { current: number };
+}) {
   const { size } = useThree();
   const pixelSize = useLab((s) => s.settings[mode].pixelSize);
 
@@ -120,7 +136,8 @@ export default function PixelPass({ mode, animate }: { mode: Mode; animate: bool
 
   // priority 1 = we take over rendering from R3F
   useFrame((state) => {
-    const s = useLab.getState().settings[mode];
+    const all = useLab.getState().settings;
+    const s = blend ? mix(all.day, all.night, blend.current) : all[mode];
     const p = postRef.current;
     if (!p) return;
     const u = p.material.uniforms;

@@ -4,7 +4,7 @@ import type { IdCard } from "@/lib/types";
 export const idCard: IdCard = {
   handle: "@laavanyanegi",
   name: "LAAVANYA NEGI",
-  title: "Product Manager",
+  title: "Product Manager | Creative",
   location: "DEL/BLR",
   languages: ["Hindi", "English", "German (A2)", "Garhwali"],
   headshot: "/headshot.webp",
