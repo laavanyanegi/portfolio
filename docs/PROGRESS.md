@@ -9,7 +9,7 @@
 | 3 | Content v1: first case study, About, Contact, ID card → **start applying** | Sonnet | ✅ done 2026-11-23 (placeholders remain, see below) |
 | 4 | The room: full 3D room, both views, flip arrows, floating labels, spinning character, day/night lighting | Opus | ✅ done 2026-11-24 (`docs/phases/04-the-room.md`); four views, room keeps getting tweaks |
 | 5 | Entrance + motion: knock screen, first-person welcome, camera choreography, section zoom | Opus | ✅ done 2026-11-24 (`docs/phases/05-entrance-and-motion.md`) |
-| 6 | Mobile world: bed point of view, 360° orb, ID icon, haptics, lighter scene | Opus | 🔄 built 2026-11-25, awaiting review (`docs/phases/06-mobile-world.md`) |
+| 6 | Mobile world: bed point of view, 360° orb, ID icon, haptics, lighter scene | Opus | ✅ done 2026-11-25 (`docs/phases/06-mobile-world.md`) |
 | 7 | Brand + polish: design system swap, accessibility, performance, SEO/OG | Sonnet | — |
 | ∞ | Ongoing content: projects, blogs, creatives | Haiku/Sonnet | — |
 
@@ -163,3 +163,5 @@ _(each phase appends: date, what was done, anything left over)_
 - Cause 2: the six lamp lights cost every pixel even by day (dark), and the desk lamp's shadow (the room drawn six more times a frame) was redrawn all day. Fix: the lamps are hidden by day (`Lights.tsx`); both versions of every material are prepared up front (frames 2, 90, 300, for the pixel filter's image `sceneTarget`), so switching day/night doesn't stall.
 - Checked: overhead view (walls cut correctly in every turn, same look as live), hover glow, night glows, phone bed view day and night, light switch. Build and lint pass.
 - Floating signs (Laavanya's screen recording: signs lag and pop in when the room turns): they were placed from the camera's previous-frame position (its matrices only update when the room is drawn) and swapped by view index the instant an arrow was pressed. Now `LabelTracker` updates the camera first and runs after it (priority 1), and every sign shows exactly while its own wall is on screen (`isCut`, exported from `Shell.tsx`), so they swap mid-turn together with the walls. Checked frame by frame through a turn.
+- Phase 6 closed 2026-11-25: approved by Laavanya, live. Open for later: Creatives close-up on phones (she walks out of view from the bed).
+- **Next:** Phase 7 (brand + polish) in a new session, once the brand system from Claude Design arrives.
