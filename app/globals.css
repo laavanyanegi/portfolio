@@ -218,3 +218,40 @@ body {
     animation: none !important;
   }
 }
+
+/* Phones: the 360° look-around orb (20% see-through sphere over the room floor) */
+.look-orb {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 9999px;
+  border: 2px solid color-mix(in srgb, var(--on-brown) 45%, transparent);
+  background: radial-gradient(
+    circle at 35% 30%,
+    color-mix(in srgb, var(--on-brown) 30%, transparent),
+    color-mix(in srgb, var(--on-brown) 20%, transparent) 45%,
+    color-mix(in srgb, var(--brown) 20%, transparent)
+  );
+  cursor: grab;
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
+}
+.look-orb.is-active,
+.look-orb:focus-visible {
+  background-color: color-mix(in srgb, var(--on-brown) 18%, transparent);
+  transform: scale(1.06);
+}
+.look-orb.is-active {
+  cursor: grabbing;
+}
+.look-orb-dot {
+  width: 0.6rem;
+  height: 0.6rem;
+  background: var(--accent);
+  border: 2px solid var(--on-brown);
+  /* pixel dot */
+  border-radius: 1px;
+}

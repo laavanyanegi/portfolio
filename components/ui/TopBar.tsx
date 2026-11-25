@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { buzz } from "@/lib/device";
 import { useRouter } from "next/navigation";
 import { useUI } from "@/store/ui";
 import { sections } from "@/content/nav";
@@ -56,6 +57,7 @@ export default function TopBar({ pathname }: { pathname: string }) {
               key={s.href}
               href={s.href}
               aria-current={active ? "page" : undefined}
+              onClick={active ? undefined : buzz}
               className={
                 active
                   ? "font-pixel relative rounded-t-md border-2 border-b-0 border-line bg-panel px-3 py-2 text-xs uppercase text-ink md:px-5 md:text-sm"

@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { useUI, type Spot } from "@/store/ui";
 import { HOME_VIEW } from "./CameraRig";
-import { awayFromDesk, placeOnChair, sitSpot, standing, wrap } from "./laavanya";
+import { awayFromDesk, BED_FACE, placeOnChair, sitSpot, standing, wrap } from "./laavanya";
 import { JUNCTION, ROUTES, type P2 } from "./sections";
 
 /**
@@ -23,12 +23,22 @@ const UP_FACE = Math.PI; // she gets up facing north, towards the room
 type Goal = Exclude<Spot, "work"> | "chair";
 type Phase = "seated" | "rising" | "walking" | "sitting" | "standing";
 
-/** The way she sits down, facing the camera's corner but never towards the desk. */
-function sitFace() {
-  return awayFromDesk(HOME_VIEW.az + useUI.getState().turns * (Math.PI / 2));
+/** The way she sits down, facing the camera's corner (phones: the visitor on the bed) but never towards the desk. */
+function sitFace(phone: boolean) {
+  return awayFromDesk(phone ? BED_FACE : HOME_VIEW.az + useUI.getState().turns * (Math.PI / 2));
 }
 
-export default function Walker({ section, entering, reducedMotion }: { section: Spot | null; entering: boolean; reducedMotion: boolean }) {
+export default function Walker({
+  section,
+  entering,
+  reducedMotion,
+  phone = false,
+}: {
+  section: Spot | null;
+  entering: boolean;
+  reducedMotion: boolean;
+  phone?: boolean;
+}) {
   const goal = useRef<Goal | null>(null);
   const phase = useRef<Phase>("seated");
   const path = useRef<P2[]>([]);
@@ -42,7 +52,7 @@ export default function Walker({ section, entering, reducedMotion }: { section: 
     const back: P2[] = atSpot ? ROUTES[at.current as Exclude<Goal, "chair">].slice(0, -1).reverse() : [];
     let end: P2[];
     if (to === "chair") {
-      face.current = sitFace();
+      face.current = sitFace(phone);
       end = [JUNCTION, sitSpot(face.current)];
     } else end = atSpot ? ROUTES[to] : [JUNCTION, ...ROUTES[to]];
     path.current = [...back, ...end];

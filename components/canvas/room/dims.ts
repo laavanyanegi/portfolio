@@ -18,6 +18,9 @@ export const BALCONY_DOOR = { z0: 3.45, z1: 4.35, y0: 0, y1: 2.3 };
 /** Where the desk chair (and Laavanya) sits. */
 export const CHAIR: [number, number, number] = [3.1, 0, D - 1.0];
 
+/** Phones: the visitor's eyes, sitting on the foot end of the bed (north-west corner). */
+export const BED_EYE: [number, number, number] = [1.9, 1.18, 0.72];
+
 /** Amber lamp on the bedside table (between the bed and the bookshelf). */
 export const BEDSIDE_LAMP: [number, number, number] = [0.22, 0.78, 1.28];
 

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useIntro } from "@/store/intro";
+import { buzz } from "@/lib/device";
 import { intro } from "@/content/intro";
 
 /** A small pixel fist seen from the side, knuckles to the left (13 × 10 grid). */
@@ -87,7 +88,10 @@ export default function EntryOverlay() {
         <button
           ref={btn}
           type="button"
-          onClick={knock}
+          onClick={() => {
+            buzz();
+            knock();
+          }}
           disabled={loading}
           aria-label={loading ? "The room is loading" : "Knock on the door to come in"}
           className="absolute inset-0 flex cursor-pointer flex-col items-center justify-center gap-4 focus:outline-none disabled:cursor-wait"

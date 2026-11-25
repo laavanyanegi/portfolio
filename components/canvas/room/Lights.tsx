@@ -14,8 +14,12 @@ const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
  * Night: moonlight, purple desk lamp (with shadows), amber bedside lamp, floor lamp, mirror bulbs, laptop glow.
  * Every light always exists and only its intensity/colour fades, so switching never stutters.
  */
-/** `softAmber`: the Creatives close-up is open, right next to the amber bedside lamp, so it glides down a little. */
-export default function Lights({ softAmber = false }: { softAmber?: boolean }) {
+/**
+ * `softAmber`: the Creatives close-up is open, right next to the amber bedside lamp, so it glides down a little.
+ * `lite` (phones, low-end devices): a smaller sun shadow and no desk-lamp shadow (a lamp's shadow means
+ * drawing the room six more times each frame).
+ */
+export default function Lights({ softAmber = false, lite = false }: { softAmber?: boolean; lite?: boolean }) {
   const t = useNight();
   const target = useMemo(() => {
     const o = new THREE.Object3D();
@@ -72,7 +76,7 @@ export default function Lights({ softAmber = false }: { softAmber?: boolean }) {
         position={[-5, 3.8, -0.5]}
         target={target}
         castShadow
-        shadow-mapSize={[2048, 2048]}
+        shadow-mapSize={lite ? [1024, 1024] : [2048, 2048]}
         shadow-bias={-0.0004}
         shadow-normalBias={0.03}
         shadow-camera-left={shadowCam.left}
@@ -90,7 +94,7 @@ export default function Lights({ softAmber = false }: { softAmber?: boolean }) {
         intensity={0}
         distance={7}
         decay={1.6}
-        castShadow
+        castShadow={!lite}
         shadow-mapSize={[512, 512]}
         shadow-bias={-0.002}
       />

@@ -9,7 +9,7 @@
 | 3 | Content v1: first case study, About, Contact, ID card → **start applying** | Sonnet | ✅ done 2026-11-23 (placeholders remain, see below) |
 | 4 | The room: full 3D room, both views, flip arrows, floating labels, spinning character, day/night lighting | Opus | ✅ done 2026-11-24 (`docs/phases/04-the-room.md`); four views, room keeps getting tweaks |
 | 5 | Entrance + motion: knock screen, first-person welcome, camera choreography, section zoom | Opus | ✅ done 2026-11-24 (`docs/phases/05-entrance-and-motion.md`) |
-| 6 | Mobile world: bed point of view, 360° orb, ID icon, haptics, lighter scene | Opus | — |
+| 6 | Mobile world: bed point of view, 360° orb, ID icon, haptics, lighter scene | Opus | 🔄 built 2026-11-25, awaiting review (`docs/phases/06-mobile-world.md`) |
 | 7 | Brand + polish: design system swap, accessibility, performance, SEO/OG | Sonnet | — |
 | ∞ | Ongoing content: projects, blogs, creatives | Haiku/Sonnet | — |
 
@@ -141,3 +141,16 @@ _(each phase appends: date, what was done, anything left over)_
 - Causes and fixes: (1) removing the door-outside light when the entrance ended changed the light count, so three.js rebuilt every material: the light now stays mounted, switched off. (2) The whole room re-rendered at every entrance step: the canvas now only re-renders when the entrance starts/ends, and Shell, ViewA and FairyLights are memoised. (3) Her seated model was first drawn mid-sit: it is now drawn see-through for its first frames. (4) The standing sprite switched into transparent mode mid-sit (a material rebuild): it is always transparent now.
 - Production build: entrance 480 frames in 8 s, worst frame 18 ms (was 550 ms). Opening a section: one 50 ms frame at the click (the page itself loading).
 - `.claude/launch.json` gained a `prod` config (`next start` on :3005) for measuring real performance.
+
+### 2026-11-25: Phase 6 (mobile world), part 1
+- Spec: `docs/phases/06-mobile-world.md`. Laavanya chose: phones only (under 768px wide, or a touch screen under 500px tall), the view stays where it is left, sections open by turning from the bed, orb in the lower middle.
+- Phone check: `lib/device.ts` (`usePhone`, `isLowEnd`, `buzz`). The room picks its camera from it.
+- Bed view: `components/canvas/room/BedCamera.tsx`, first person from the foot of the bed (`BED_EYE` in `dims.ts`), facing her chair. No wall is cut away on phones (`cameraMotion.inside`) and a ceiling with a soft glow closes the top. She sits facing the bed (`BED_FACE`).
+- 360° orb: `components/ui/LookOrb.tsx` (styles in `globals.css`). Dragging it or the room turns the view all the way round (look direction in `store/look.ts`); a tap faces her again; the dot inside shows where she is. Arrow keys turn/tilt on phones.
+- Sections from the bed (`BED_SHOTS`): the view turns to the spot and zooms; going home turns back to her. All four signs are live and show whenever their spot is in front.
+- Entrance on phones: same knock and greeting, then the camera follows her through the doorway at eye level and settles on the bed (hand-off to the bed view without a jump).
+- ID icon top-left on phones (also held sideways). Haptics: 15 ms on the knock, section buttons, signs and top-bar tabs (phones only).
+- Lighter scene (phones and ≤4-core / ≤4 GB devices): 1024 sun shadow map (was 2048), no desk-lamp shadow, default GPU power mode.
+- Checked at 375×812: entrance, orb drag round to the balcony and the gallery, tap to face her, Creatives/Work/Contact, home. Desktop unchanged. Console clean. Build and lint pass.
+- Bug sweep: the room only takes over a finger once it really drags, so a tap still reaches the light switch (it was swallowed before); the bed view clears the "room turning" flag, so the fairy lights can never get stuck off after resizing from desktop to phone. Light switch tap and room drag re-checked on 375px.
+- Open for review: on Creatives she walks to her spot by the bed, which is off-screen from the bed view (the gallery is behind the visitor). Haptics need a real Android phone to feel.

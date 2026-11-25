@@ -6,8 +6,9 @@ import { PerspectiveCamera, useTexture } from "@react-three/drei";
 import * as THREE from "three";
 import { ROOM } from "@/lib/roomPalette";
 import { useIntro } from "@/store/intro";
-import { CENTER, ENTRY_DOOR, T, W } from "./dims";
+import { BED_EYE, CENTER, ENTRY_DOOR, T, W } from "./dims";
 import {
+  BED_FACE,
   GREET_SPOT,
   lerp,
   placeOnChair,
@@ -19,6 +20,7 @@ import {
 import { cameraMotion, useNight } from "./parts";
 import { CutWall } from "./Shell";
 import { HOME_VIEW, homeFraming } from "./CameraRig";
+import { BED_HOME_LOOK, bedFov } from "./BedCamera";
 
 /**
  * The entrance: the visitor stands outside the entry door (closet wall, east), knocks, the door
@@ -255,10 +257,10 @@ const SIT_FACE = HOME_VIEW.az; // she sits facing the home camera, then starts t
 const WALK = [0.15, 1.45];
 const TURN = [1.45, 1.75];
 const SIT = [1.75, 2.35];
-function walkHer(e: number) {
+function walkHer(e: number, face: number) {
   const [gx, gz] = GREET_SPOT;
-  const [sx, sz] = sitSpot(SIT_FACE);
-  standing.chairFace = SIT_FACE;
+  const [sx, sz] = sitSpot(face);
+  standing.chairFace = face;
   if (e < TURN[0]) {
     const k = sm(e, WALK[0], WALK[1]);
     standing.x = lerp(gx, sx, k);
@@ -273,8 +275,8 @@ function walkHer(e: number) {
   const dir = Math.atan2(sx - gx, sz - gz);
   standing.x = sx;
   standing.z = sz;
-  standing.heading = dir + wrap(SIT_FACE - dir) * sm(e, TURN[0], TURN[1]);
-  if (e >= SIT[0]) placeOnChair(SIT_FACE, sm(e, SIT[0], SIT[1]));
+  standing.heading = dir + wrap(face - dir) * sm(e, TURN[0], TURN[1]);
+  if (e >= SIT[0]) placeOnChair(face, sm(e, SIT[0], SIT[1]));
 }
 
 type Shot = {
@@ -288,9 +290,12 @@ type Shot = {
 export function EntryCamera({
   active,
   reducedMotion,
+  phone = false,
 }: {
   active: boolean;
   reducedMotion: boolean;
+  /** phones: the walk-in stays at eye level and ends sitting on the bed (see BedCamera) */
+  phone?: boolean;
 }) {
   const cam = useRef<THREE.PerspectiveCamera>(null);
   const x = useRef(FAR_X);
@@ -299,6 +304,9 @@ export function EntryCamera({
   const tgt = useMemo(() => new THREE.Vector3(), []);
   const follow = useMemo(() => new THREE.Vector3(), []);
   const center = useMemo(() => new THREE.Vector3(...CENTER), []);
+  const bedLook = useMemo(() => new THREE.Vector3(...BED_HOME_LOOK), []);
+  const path = useRef<THREE.CatmullRomCurve3 | null>(null);
+  const sitFace = phone ? BED_FACE : SIT_FACE;
 
   useEffect(() => {
     cameraMotion.planeCut = active;
@@ -318,7 +326,7 @@ export function EntryCamera({
 
     if (stage === "walking") {
       if (reducedMotion) {
-        placeOnChair(SIT_FACE, 1);
+        placeOnChair(sitFace, 1);
         intro.finish();
         return;
       }
@@ -335,8 +343,30 @@ export function EntryCamera({
         };
       }
       const s0 = start.current;
-      walkHer(e);
+      walkHer(e, sitFace);
       const u = Math.min(1, e / WALK_TIME);
+      if (phone) {
+        // phones: stay at eye level, follow her through the doorway, then sit down on the foot of the bed
+        // facing her chair, exactly where the bed camera takes over
+        if (!path.current)
+          path.current = new THREE.CatmullRomCurve3(
+            [c.position.clone(), new THREE.Vector3(W - 0.75, EYE, DOOR_Z - 0.05), new THREE.Vector3(3.6, 1.32, 2.1), new THREE.Vector3(...BED_EYE)],
+            false,
+            "centripetal",
+          );
+        path.current.getPointAt(sm(u, 0.05, 0.97), c.position);
+        follow.set(standing.x, 1.2, standing.z);
+        tgt.copy(s0.look).lerp(follow, sm(u, 0, 0.3)).lerp(bedLook, sm(u, 0.6, 0.97));
+        c.lookAt(tgt);
+        const aspect = size.width / size.height;
+        c.fov = lerp(fovFor(aspect), bedFov(aspect), sm(u, 0.3, 0.97));
+        c.near = 0.05;
+        c.far = 40;
+        c.clearViewOffset();
+        c.updateProjectionMatrix();
+        if (u >= 1) intro.finish();
+        return;
+      }
       const { nav, zoom } = homeFraming(size.width, size.height);
       // look at her as she walks in, then at the middle of the room
       follow.set(standing.x, 1.15, standing.z);
@@ -381,6 +411,7 @@ export function EntryCamera({
     }
 
     start.current = null;
+    path.current = null;
     const fov = fovFor(size.width / size.height);
     if (Math.abs(c.fov - fov) > 0.01) {
       c.fov = fov;

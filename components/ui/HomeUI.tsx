@@ -6,6 +6,9 @@ import { sections } from "@/content/nav";
 import { useUI, VIEW_NAMES, type Spot } from "@/store/ui";
 import HandleButton from "./HandleButton";
 import ThemeToggle from "./ThemeToggle";
+import LookOrb from "./LookOrb";
+import { buzz, usePhone } from "@/lib/device";
+import { useLook } from "@/store/look";
 
 /** `hidden` while the entrance plays: the controls stay in the page (for search and no-JS) but fade in afterwards. */
 export default function HomeUI({ hidden = false }: { hidden?: boolean }) {
@@ -13,6 +16,7 @@ export default function HomeUI({ hidden = false }: { hidden?: boolean }) {
   const rotate = useUI((s) => s.rotateView);
   const setHover = useUI((s) => s.setHoverSpot);
   const nav = useRef<HTMLElement>(null);
+  const phone = usePhone();
 
   // back from a section: put focus on that section's button, so keyboard users carry on from there
   // (runs before the room records the new page, so lastPath is still the section)
@@ -21,17 +25,27 @@ export default function HomeUI({ hidden = false }: { hidden?: boolean }) {
     if (from) nav.current?.querySelector<HTMLElement>(`a[href="/${from}"]`)?.focus({ preventScroll: true });
   }, []);
 
-  // left/right arrow keys turn the room too
+  // left/right arrow keys turn the room too (phones: they turn the visitor's head, up/down tilt it)
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (hidden || useUI.getState().idCardOpen || e.altKey || e.ctrlKey || e.metaKey) return;
       if (e.target instanceof Element && e.target.closest("input, textarea, select")) return;
+      if (phone) {
+        const look = useLook.getState().lookBy;
+        if (e.key === "ArrowLeft") look(0.4, 0);
+        else if (e.key === "ArrowRight") look(-0.4, 0);
+        else if (e.key === "ArrowUp") look(0, 0.15);
+        else if (e.key === "ArrowDown") look(0, -0.15);
+        else return;
+        e.preventDefault();
+        return;
+      }
       if (e.key === "ArrowLeft") rotate(-1);
       if (e.key === "ArrowRight") rotate(1);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [rotate, hidden]);
+  }, [rotate, hidden, phone]);
 
   return (
     <div
@@ -68,14 +82,22 @@ export default function HomeUI({ hidden = false }: { hidden?: boolean }) {
             onPointerLeave={() => setHover(null)}
             onFocus={() => setHover(s.label as Spot)}
             onBlur={() => setHover(null)}
-            className="font-pixel rounded-sm border-2 border-on-brown bg-brown/90 px-4 py-3 text-center text-sm uppercase tracking-wider text-on-brown transition-colors duration-300 hover:bg-[color-mix(in_srgb,var(--brown)_55%,var(--accent))] md:py-4"
+            onClick={buzz}
+            className="font-pixel flex min-h-12 items-center justify-center rounded-sm border-2 border-on-brown bg-brown/90 px-4 py-3 text-center text-sm uppercase tracking-wider text-on-brown transition-colors duration-300 hover:bg-[color-mix(in_srgb,var(--brown)_55%,var(--accent))] md:py-4"
           >
             {s.label}
           </Link>
         ))}
       </nav>
 
-      <div className="pointer-events-auto absolute bottom-6 right-6 hidden items-center gap-2 md:flex">
+      {/* phones: the 360° look-around orb, over the floor and clear of her face */}
+      {phone && (
+        <div className="pointer-events-auto absolute bottom-[9.5rem] left-1/2 -translate-x-1/2">
+          <LookOrb />
+        </div>
+      )}
+
+      <div className={`pointer-events-auto absolute bottom-6 right-6 hidden items-center gap-2 ${phone ? "" : "md:flex"}`}>
         <span className="sr-only-text" aria-live="polite">
           {`Showing ${VIEW_NAMES[view]}`}
         </span>

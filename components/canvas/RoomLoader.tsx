@@ -11,6 +11,7 @@ import {
 import { useTheme } from "next-themes";
 import { useUI, type Spot } from "@/store/ui";
 import { introActive, useIntro, webgl } from "@/store/intro";
+import { isLowEnd, usePhone } from "@/lib/device";
 
 // three.js only loads in the browser, after the page itself is readable
 const RoomCanvas = dynamic(() => import("./RoomCanvas"), {
@@ -74,6 +75,7 @@ export default function RoomLoader() {
     () => window.matchMedia(RM).matches,
     () => false,
   );
+  const phone = usePhone();
   const mounted = useSyncExternalStore(
     () => () => {},
     () => true,
@@ -94,6 +96,8 @@ export default function RoomLoader() {
           onToggleNight={() =>
             setTheme(resolvedTheme === "night" ? "day" : "night")
           }
+          phone={phone}
+          lite={phone || isLowEnd()}
         />
       </RoomBoundary>
     </div>

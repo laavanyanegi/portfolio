@@ -1,4 +1,4 @@
-import { CHAIR, ENTRY_DOOR, W } from "./dims";
+import { BED_EYE, CHAIR, ENTRY_DOOR, W } from "./dims";
 
 /**
  * Where Laavanya is and what she's doing, shared by everything that moves or draws her:
@@ -12,6 +12,9 @@ export const smooth = (x: number, a: number, b: number) => {
   return t * t * (3 - 2 * t);
 };
 export const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+
+/** Phones: the way from her chair to the visitor sitting on the bed (she sits facing them). */
+export const BED_FACE = Math.atan2(BED_EYE[0] - CHAIR[0], BED_EYE[2] - CHAIR[2]);
 
 /** Where she stands to greet: just inside the entry door, facing it. */
 export const GREET_SPOT: [number, number] = [W - 1.05, (ENTRY_DOOR.z0 + ENTRY_DOOR.z1) / 2];

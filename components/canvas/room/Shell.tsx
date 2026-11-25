@@ -13,6 +13,7 @@ type Side = Wall;
 
 /** Is the camera on the outside of this wall (so it is cut away)? */
 function isCut(side: Side, p: THREE.Vector3) {
+  if (cameraMotion.inside) return false;
   if (cameraMotion.planeCut) {
     if (p.y < H) return false;
     if (side === "west") return p.x < 0;
@@ -24,6 +25,24 @@ function isCut(side: Side, p: THREE.Vector3) {
   if (side === "east") return p.x > CENTER[0];
   if (side === "north") return p.z < CENTER[2];
   return p.z > CENTER[2];
+}
+
+/** Phones look round the room from the bed, so the room gets a ceiling there (the dollhouse view has none). */
+function Ceiling() {
+  const ref = useRef<THREE.Mesh>(null);
+  const mat = useRef<THREE.MeshStandardMaterial>(null);
+  const night = useNight();
+  useFrame(() => {
+    if (ref.current) ref.current.visible = cameraMotion.inside;
+    // the lights mostly shine down, so the ceiling gets a soft glow of its own (dimmer at night)
+    if (mat.current) mat.current.emissiveIntensity = 0.45 - 0.35 * night.current;
+  });
+  return (
+    <mesh ref={ref} position={[W / 2, H, D / 2]} rotation={[Math.PI / 2, 0, 0]} visible={false}>
+      <planeGeometry args={[W + 2 * T, D + 2 * T]} />
+      <meshStandardMaterial ref={mat} color={ROOM.wall} emissive={ROOM.wall} emissiveIntensity={0.45} roughness={0.95} />
+    </mesh>
+  );
 }
 
 /**
@@ -173,6 +192,8 @@ function Shell() {
           ),
         )}
       </mesh>
+
+      <Ceiling />
 
       {/* invisible ceiling: never drawn, but it blocks sunlight from the open top */}
       <mesh position={[W / 2, H + 0.1, D / 2]} castShadow>
