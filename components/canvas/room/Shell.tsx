@@ -11,8 +11,8 @@ import type { Wall } from "@/store/ui";
 
 type Side = Wall;
 
-/** Is the camera on the outside of this wall (so it is cut away)? */
-function isCut(side: Side, p: THREE.Vector3) {
+/** Is the camera on the outside of this wall (so it is cut away)? Also used by the floating signs. */
+export function isCut(side: Side, p: THREE.Vector3) {
   if (cameraMotion.inside) return false;
   if (cameraMotion.planeCut) {
     if (p.y < H) return false;

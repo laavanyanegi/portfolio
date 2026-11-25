@@ -4,9 +4,10 @@ import { useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { sections } from "@/content/nav";
-import { useUI, VIEW_WALLS, type Spot } from "@/store/ui";
+import { useUI, type Spot } from "@/store/ui";
 import { buzz } from "@/lib/device";
 import { SPOTS } from "./dims";
+import { isCut } from "./Shell";
 
 export type LabelEls = { current: Partial<Record<Spot, HTMLAnchorElement | null>> };
 
@@ -14,25 +15,16 @@ const BUILT: Spot[] = ["work", "about", "creatives", "contact"];
 
 /**
  * Floating pixel signs above each section's spot. They are ordinary links laid over the canvas
- * (keyboard and screen-reader friendly); <LabelTracker> moves them to follow the room each frame.
+ * (keyboard and screen-reader friendly); <LabelTracker> moves them to follow the room each frame,
+ * and shows each one exactly while its wall is on screen (also part-way through a turn).
  */
-export function RoomLabels({
-  elsRef,
-  navigate,
-  all = false,
-}: {
-  elsRef: LabelEls;
-  navigate: (href: string) => void;
-  /** phones (looking round from the bed): every sign is live, and shows while its spot is in front */
-  all?: boolean;
-}) {
-  const view = useUI((s) => s.view);
+export function RoomLabels({ elsRef, navigate }: { elsRef: LabelEls; navigate: (href: string) => void }) {
   const setHover = useUI((s) => s.setHoverSpot);
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
       {sections.map((s) => {
         const spot = s.label as Spot;
-        if (!BUILT.includes(spot) || (!all && !VIEW_WALLS[view].includes(SPOTS[spot].wall))) return null;
+        if (!BUILT.includes(spot)) return null;
         return (
           <a
             key={spot}
@@ -68,20 +60,24 @@ export function RoomLabels({
 export function LabelTracker({ elsRef }: { elsRef: LabelEls }) {
   const v = useMemo(() => new THREE.Vector3(), []);
   useFrame(({ camera, size }) => {
+    // the camera has already moved this frame, but its matrices only catch up when the room is drawn:
+    // bring them up to date first, or the signs trail one frame behind while the room turns
+    camera.updateMatrixWorld();
     for (const spot of BUILT) {
       const el = elsRef.current[spot];
       if (!el) continue;
       v.set(...SPOTS[spot].pos).project(camera);
-      // behind the visitor (phones look all the way round): hide it
-      if (v.z > 1) {
-        el.style.visibility = "hidden";
+      // hidden while its wall is cut away (it swaps exactly when the wall does), or behind the visitor (phones)
+      if (isCut(SPOTS[spot].wall, camera.position) || v.z > 1) {
+        if (el.style.visibility !== "hidden") el.style.visibility = "hidden";
         continue;
       }
       const x = ((v.x + 1) / 2) * size.width;
       const y = ((1 - v.y) / 2) * size.height;
       el.style.translate = `calc(${x.toFixed(1)}px - 50%) calc(${y.toFixed(1)}px - 100%)`;
-      el.style.visibility = "visible";
+      if (el.style.visibility !== "visible") el.style.visibility = "visible";
     }
-  });
+    // priority 1: always after the camera has moved this frame (the room is drawn at this priority too)
+  }, 1);
   return null;
 }

@@ -152,7 +152,7 @@ export default function RoomCanvas({
           <PixelPass mode={night ? "night" : "day"} animate={!reducedMotion} blend={t} />
         </NightCtx.Provider>
       </Canvas>
-      {home && <RoomLabels elsRef={labelEls} navigate={navigate} all={phone} />}
+      {home && <RoomLabels elsRef={labelEls} navigate={navigate} />}
     </div>
   );
 }
