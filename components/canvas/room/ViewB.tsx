@@ -356,7 +356,7 @@ function EntryDoor() {
       <Box p={[cu, 0.006, -T / 2]} s={[wid, 0.012, T + 0.04]} c="#2e1a10" cast={false} />
       {/* leaf on its hinge, panels and lever on both faces */}
       <group position={[z1, 0, -0.015]}>
-        <group ref={leaf}>
+        <group ref={leaf} userData={{ dynamic: true }}>
           <Box p={[lc, h / 2 - 0.005, 0]} s={[wid - 0.05, h - 0.035, 0.05]} c="#4a2a18" />
           {[0.029, -0.029].map((d) => (
             <group key={d}>

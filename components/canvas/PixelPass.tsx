@@ -64,6 +64,9 @@ void main() {
   gl_FragColor = vec4(clamp(c, 0.0, 1.0), 1.0);
 }`;
 
+/** The low-res image the room is drawn into (materials must be prepared for it, not for the screen). */
+export const sceneTarget: { current: THREE.WebGLRenderTarget | null } = { current: null };
+
 export default function PixelPass({
   mode,
   animate,
@@ -153,6 +156,7 @@ export default function PixelPass({
     if (animate) u.uTime.value = (state.clock.elapsedTime * 60) % 1000;
 
     const { gl, scene, camera } = state;
+    sceneTarget.current = target;
     gl.setRenderTarget(target);
     gl.render(scene, camera);
     gl.setRenderTarget(null);

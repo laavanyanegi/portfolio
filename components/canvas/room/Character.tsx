@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { RoundedBox, useTexture } from "@react-three/drei";
 import * as THREE from "three";
+import StaticBatch from "./StaticBatch";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import { CHAIR } from "./dims";
@@ -701,9 +702,14 @@ export default function Character({ spinning, faceDesk = false }: { spinning: bo
 
   return (
     <group position={CHAIR}>
-      <ChairBase />
+      {/* the chair never changes shape: its blocks are merged (base and seat separately, the seat swivels) */}
+      <StaticBatch>
+        <ChairBase />
+      </StaticBatch>
       <group ref={swivel}>
-        <SwivelTop />
+        <StaticBatch>
+          <SwivelTop />
+        </StaticBatch>
         <group ref={body} visible={false}>
           <Body />
         </group>

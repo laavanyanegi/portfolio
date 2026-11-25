@@ -110,7 +110,17 @@ export function NightGlow({
   useFrame(() => {
     if (ref.current) ref.current.emissiveIntensity = day + (night - day) * t.current;
   });
-  return <meshStandardMaterial ref={ref} color={color} emissive={glow} emissiveIntensity={day} side={side} />;
+  // glowKey: StaticBatch may merge identical glows (e.g. the mirror bulbs) into one piece that keeps this material
+  return (
+    <meshStandardMaterial
+      ref={ref}
+      color={color}
+      emissive={glow}
+      emissiveIntensity={day}
+      side={side}
+      userData={{ glowKey: `${color}|${glow}|${day}|${night}|${side ?? 0}` }}
+    />
+  );
 }
 
 /** Gentle lavender highlight on a room spot while its label or nav button is hovered (eases in/out ~0.4s). */
@@ -130,5 +140,10 @@ export function Glow({ spot, children }: { spot: Spot; children: ReactNode }) {
       m.emissiveIntensity = amt.current * 0.12;
     });
   });
-  return <group ref={ref}>{children}</group>;
+  // a boundary for StaticBatch: merged blocks stay inside it, so they still light up on hover
+  return (
+    <group ref={ref} userData={{ batchBoundary: true }}>
+      {children}
+    </group>
+  );
 }

@@ -154,3 +154,11 @@ _(each phase appends: date, what was done, anything left over)_
 - Checked at 375×812: entrance, orb drag round to the balcony and the gallery, tap to face her, Creatives/Work/Contact, home. Desktop unchanged. Console clean. Build and lint pass.
 - Bug sweep: the room only takes over a finger once it really drags, so a tap still reaches the light switch (it was swallowed before); the bed view clears the "room turning" flag, so the fairy lights can never get stuck off after resizing from desktop to phone. Light switch tap and room drag re-checked on 375px.
 - Open for review: on Creatives she walks to her spot by the bed, which is off-screen from the bed view (the gallery is behind the visitor). Haptics need a real Android phone to feel.
+
+### 2026-11-25: Phase 6, part 2: smoothness (Laavanya: "a bit choppy on my phone")
+- Measured with a temporary probe (removed), same room and view, production build:
+  - Desktop: ~1,500 draw commands and 23.4 ms per frame before (over the 16.7 ms a smooth 60 fps allows) → 234 commands / 6.2 ms by day, 350 / ~11.8 ms at night with the lamp shadow.
+  - Phone size, home view: ~780 → ~120 draw commands per frame.
+- Cause 1: ~500 separate room blocks, each drawn on its own, and again for every shadow. Fix: `components/canvas/room/StaticBatch.tsx` merges the plain, still blocks into a few pieces once the room mounts (colours kept per block). It never merges across a wall (`CutWall`) or hover-glow (`Glow`) group (`userData.batchBoundary`), skips anything clickable, glowing-by-texture, see-through or `userData.dynamic` (clock hands, door leaf). Identical night glows (mirror bulbs) merge and keep their glow. The chair is merged too (base and swivelling seat separately). Originals are hidden, not removed.
+- Cause 2: the six lamp lights cost every pixel even by day (dark), and the desk lamp's shadow (the room drawn six more times a frame) was redrawn all day. Fix: the lamps are hidden by day (`Lights.tsx`); both versions of every material are prepared up front (frames 2, 90, 300, for the pixel filter's image `sceneTarget`), so switching day/night doesn't stall.
+- Checked: overhead view (walls cut correctly in every turn, same look as live), hover glow, night glows, phone bed view day and night, light switch. Build and lint pass.

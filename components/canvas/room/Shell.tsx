@@ -79,7 +79,12 @@ export function CutWall({
       if (dropShadows) o.castShadow = h ? false : o.userData.baseCast;
     });
   });
-  return <group ref={ref}>{children}</group>;
+  // a boundary for StaticBatch: merged blocks stay inside it, so they hide with their wall
+  return (
+    <group ref={ref} userData={{ batchBoundary: true }}>
+      {children}
+    </group>
+  );
 }
 
 type Opening = { a0: number; a1: number; y0: number; y1: number };

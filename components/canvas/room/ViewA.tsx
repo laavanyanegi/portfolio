@@ -220,10 +220,10 @@ function WallClock() {
           />
         );
       })}
-      <group ref={hour} position={[0, 0, 0.046]}>
+      <group ref={hour} position={[0, 0, 0.046]} userData={{ dynamic: true }}>
         <Box p={[0, 0.035, 0]} s={[0.016, 0.08, 0.004]} c="#2a2420" cast={false} />
       </group>
-      <group ref={minute} position={[0, 0, 0.05]}>
+      <group ref={minute} position={[0, 0, 0.05]} userData={{ dynamic: true }}>
         <Box p={[0, 0.05, 0]} s={[0.01, 0.11, 0.004]} c="#2a2420" cast={false} />
       </group>
     </group>

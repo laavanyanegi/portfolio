@@ -6,6 +6,7 @@ import * as THREE from "three";
 import { ROOM } from "@/lib/roomPalette";
 import { BEDSIDE_LAMP, CHAIR, D, FLOOR_LAMP, MIRROR, W } from "./dims";
 import { useNight } from "./parts";
+import { sceneTarget } from "../PixelPass";
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
@@ -47,8 +48,27 @@ export default function Lights({ softAmber = false, lite = false }: { softAmber?
     [],
   );
 
-  useFrame((_, dt) => {
+  const frame = useRef(0);
+  useFrame(({ gl, scene, camera }, dt) => {
     const n = t.current;
+    // The lamps are dark all day, but a dark light still costs every pixel, so they are hidden by day.
+    // Showing/hiding lights makes the browser prepare each material again (a visible stall), so both
+    // versions are prepared up front, while the room loads (again a little later, for parts that load late).
+    const lamps = [desk.current, amber.current, screen.current, fill.current, floorLamp.current, mirror.current];
+    const on = n > 0.001;
+    const f = frame.current++;
+    if ((f === 2 || f === 90 || f === 300) && sceneTarget.current) {
+      // prepared for the pixel filter's image, which is what the room is really drawn into
+      const before = gl.getRenderTarget();
+      gl.setRenderTarget(sceneTarget.current);
+      for (const l of lamps) if (l) l.visible = !on;
+      // the first one runs while the room is still loading; later ones (for late parts) in the background
+      if (f === 2 || !gl.compileAsync) gl.compile(scene, camera);
+      else gl.compileAsync(scene, camera).catch(() => {});
+      gl.setRenderTarget(before);
+    }
+    // its shadow (drawing the room six more times a frame) and its light only while a lamp is actually on
+    for (const l of lamps) if (l) l.visible = on;
     amberDim.current += ((softAmber ? 0.55 : 1) - amberDim.current) * Math.min(1, dt * 2.5);
     if (sun.current) {
       sun.current.intensity = lerp(6, 0.35, n);

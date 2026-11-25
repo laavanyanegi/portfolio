@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useMemo, useRef } from "react";
 import { LOOK_PER_PX, useLook } from "@/store/look";
 import BedCamera from "./room/BedCamera";
+import StaticBatch from "./room/StaticBatch";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { ROOM } from "@/lib/roomPalette";
@@ -135,9 +136,12 @@ export default function RoomCanvas({
           {/* stays mounted (light switched off) after the entrance: removing a light makes three.js rebuild every material at once */}
           <DoorOutside on={entering} />
           <Lights softAmber={section === "creatives"} lite={lite} />
-          <Shell />
-          <ViewA />
+          {/* the still parts of the room are merged into a few big pieces once mounted (much faster to draw) */}
+          <StaticBatch>
+            <Shell />
+            <ViewA />
           <ViewB night={night} onToggleNight={onToggleNight} interactive={home && (phone || VIEW_WALLS[view].includes("east"))} />
+          </StaticBatch>
           <FairyLights />
           <Suspense fallback={null}>
             <Character spinning={home && !reducedMotion} faceDesk={section === "work"} />
